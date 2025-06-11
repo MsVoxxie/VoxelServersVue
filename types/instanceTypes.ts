@@ -1,4 +1,4 @@
-export type ServerState = 'PreStart' | 'Starting' | 'Started' | 'Updating' | 'Stopping' | 'Stopped' | 'Offline' | 'Errored';
+export type ServerState = 'PreStart' | 'Starting' | 'Running' | 'Updating' | 'Stopping' | 'Stopped' | 'Offline' | 'Failed';
 
 export interface InstanceMetric {
 	RawValue: number;
@@ -21,7 +21,6 @@ export interface ServerInfo {
 	performance: InstanceMetric;
 	ip: string;
 	port: number;
-	players?: any[];
 }
 
 export interface Instance {
@@ -37,6 +36,7 @@ export interface Instance {
 	icon: string;
 	suspended: boolean;
 	server: ServerInfo;
+	players: Array<{ name: string; uuid: string }>;
 }
 
 export interface InstanceResponse {

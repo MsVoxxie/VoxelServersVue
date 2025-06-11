@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ServerState } from '~/types/instances';
+import type { ServerState } from '~/types/instanceTypes';
 
 defineProps<{
 	state: ServerState;
