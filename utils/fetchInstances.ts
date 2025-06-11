@@ -5,6 +5,5 @@ export default async function getInstances(id?: string) {
 	const baseUrl = config.public.instanceURI;
 	const url = id ? `${baseUrl}/${encodeURIComponent(id)}` : baseUrl;
 	const data: InstanceResponse = await $fetch(url, { method: 'GET' });
-	console.log(data);
 	return data;
 }
