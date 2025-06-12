@@ -8,11 +8,15 @@ export default defineNuxtConfig({
 			mcHeadsURI: 'https://vsb.voxxie.me/v1/client/playerheads',
 		},
 	},
+
 	ui: {
 		prefix: 'Nuxt',
 	},
 	app: {
 		pageTransition: { name: 'fade', mode: 'out-in' },
+		head: {
+			link: [{ rel: 'icon', type: 'image/x-icon', href: '/img/favicon.ico' }],
+		},
 	},
 	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/scripts', '@nuxt/ui', '@nuxtjs/tailwindcss', '@hypernym/nuxt-anime'],
 	css: ['~/assets/css/main.css'],

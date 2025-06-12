@@ -57,6 +57,20 @@ onMounted(() => {
 onUnmounted(() => {
 	if (intervalId) clearInterval(intervalId);
 });
+
+useHead({
+	title: 'VoxelServers | Servers',
+	meta: [
+		{
+			name: 'description',
+			content: `All Servers Status page.`,
+		},
+		{
+			name: 'twitter:image',
+			content: '/img/SrvLogoAlt.png',
+		},
+	],
+});
 </script>
 <template>
 	<div class="page-wrapper min-h-screen flex flex-col justify-center items-center py-6 px-8 pt-10">

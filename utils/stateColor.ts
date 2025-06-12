@@ -1,25 +1,26 @@
 import type { ServerState } from '../types/instanceTypes';
 
 const borderColor = (serverState: ServerState) => {
+	// AMP (CubeCoders) style status colors
 	switch (serverState) {
 		case 'Running':
-			return { border: 'border-emerald-600', bg: 'bg-emerald-600' }; // Healthy green
+			return { border: 'border-emerald-500', bg: 'bg-emerald-500' };
 		case 'Stopped':
-			return { border: 'border-neutral-500', bg: 'bg-neutral-500' }; // Neutral gray
+			return { border: 'border-gray-400', bg: 'bg-gray-400' };
 		case 'Offline':
-			return { border: 'border-gray-700', bg: 'bg-gray-700' }; // Dark gray for offline
+			return { border: 'border-gray-600', bg: 'bg-gray-600' };
 		case 'PreStart':
-			return { border: 'border-sky-700', bg: 'bg-sky-700' }; // Calm blue
+			return { border: 'border-blue-500', bg: 'bg-blue-500' };
 		case 'Starting':
-			return { border: 'border-amber-700', bg: 'bg-amber-700' }; // Amber for starting
+			return { border: 'border-blue-500', bg: 'bg-blue-500' };
 		case 'Updating':
-			return { border: 'border-blue-800', bg: 'bg-blue-800' }; // Deep blue for updating
+			return { border: 'border-orange-500', bg: 'bg-orange-500' };
 		case 'Stopping':
-			return { border: 'border-yellow-800', bg: 'bg-yellow-800' }; // Muted yellow
+			return { border: 'border-amber-400', bg: 'bg-amber-400' };
 		case 'Failed':
-			return { border: 'border-red-700', bg: 'bg-red-700' }; // Red for error
+			return { border: 'border-red-500', bg: 'bg-red-500' };
 		default:
-			return { border: 'border-slate-600', bg: 'bg-slate-600' }; // Default muted slate
+			return { border: 'border-gray-300', bg: 'bg-gray-300' };
 	}
 };
 
