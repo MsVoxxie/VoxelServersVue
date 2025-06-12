@@ -69,6 +69,10 @@ useHead({
 			name: 'twitter:image',
 			content: instance.value?.icon || '/img/SrvLogoAlt.png',
 		},
+		{
+			name: 'theme-color',
+			content: `${borderColor(instance.value?.server.state ?? 'Offline').meta || '#d5d5d5'}`,
+		},
 	],
 });
 </script>

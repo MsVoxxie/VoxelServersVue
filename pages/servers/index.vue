@@ -69,6 +69,10 @@ useHead({
 			name: 'twitter:image',
 			content: '/img/SrvLogoAlt.png',
 		},
+		{
+			name: 'theme-color',
+			content: '#d5d5d5',
+		},
 	],
 });
 </script>
