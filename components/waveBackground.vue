@@ -3,10 +3,12 @@ import { onMounted } from 'vue';
 const { $anime } = useNuxtApp();
 
 const waveIntensity = 1.5; // Lower for smoother waves
+const animDelay = 5 * 1000;
 
 onMounted(() => {
 	document.querySelectorAll<SVGPathElement>('.wave').forEach((wave, idx) => {
 		const originalD = wave.getAttribute('d') || '';
+		const randomDur = 6000 + Math.random() * 5000;
 
 		function perturbPath(d: string, amount = 20, phase = 0) {
 			const actualAmount = amount * waveIntensity;
@@ -21,7 +23,16 @@ onMounted(() => {
 		}
 
 		let phase = 0;
+		let lastTime = 0;
 		function animateWave() {
+			const now = Date.now();
+			if (now - lastTime < animDelay) {
+				requestAnimationFrame(animateWave);
+
+				return;
+			}
+			lastTime = now;
+
 			phase += 0.5 + Math.random() * 0.5;
 			const newD = perturbPath(originalD, 18 + Math.random() * 8, phase);
 			const shift = (Math.random() - 0.5) * 24;
@@ -30,14 +41,17 @@ onMounted(() => {
 				targets: wave,
 				d: [{ value: newD }, { value: originalD }],
 				translateX: [{ value: shift }, { value: 0 }],
-				duration: 6000 + Math.random() * 5000,
+				duration: randomDur,
 				easing: 'easeInOutSine',
 				direction: 'alternate',
 				loop: false,
-				complete: animateWave,
+				complete: () => {
+					setTimeout(() => {
+						animateWave(); // Wait animDelay ms before starting next animation
+					}, animDelay);
+				},
 			});
 		}
-
 		animateWave();
 	});
 });
