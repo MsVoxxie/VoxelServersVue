@@ -1,15 +1,14 @@
+<script setup lang="ts">
+const { throbberState } = useThrobber();
+</script>
+
 <template>
 	<transition name="fade">
-		<div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 blur-fade">
-			<span class="loader"></span>
+		<div v-if="throbberState.value" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 blur-fade">
+			<span class="loader" />
 		</div>
 	</transition>
 </template>
-
-<script setup lang="ts">
-import { defineProps } from 'vue';
-defineProps<{ show?: boolean }>();
-</script>
 
 <style scoped>
 .fade-enter-active,

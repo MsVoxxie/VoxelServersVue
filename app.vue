@@ -1,9 +1,8 @@
-<script setup lang="ts">
-import WaveBackground from './components/waveBackground.vue';
-</script>
+<script setup lang="ts"></script>
 
 <template>
 	<WaveBackground />
+	<FullPageLoad />
 	<NuxtLayout>
 		<NuxtPage />
 	</NuxtLayout>

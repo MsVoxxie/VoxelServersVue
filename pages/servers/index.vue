@@ -1,78 +1,73 @@
 <script setup lang="ts">
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
+import type { Instance, InstancesResponse } from '../../types/instanceTypes';
+import borderColor from '../../utils/stateColor';
+
 definePageMeta({
 	layout: 'nav-header',
 });
 
-import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
-import type { Instance } from '../../types/instanceTypes';
-import borderColor from '../../utils/stateColor';
-import getInstances from '../../utils/fetchInstances';
-import FullpageLoad from '~/components/fullpageLoad.vue';
+const { hideThrobber, showThrobber, throbberState } = useThrobber();
+const config = useRuntimeConfig();
+const baseUrl = config.public.instanceURI;
 
-const { data, refresh, pending } = useAsyncData('instances', () => getInstances());
+const isLoading = ref(true);
 
-const lastGoodInstances = ref<Instance[]>([]);
-const initialLoadDone = ref(false);
-const showLoader = ref(true);
-const MIN_LOAD_TIME = 500; // ms
+const { data, pending, refresh } = await useFetch<InstancesResponse>(baseUrl, {
+	method: 'GET',
+	server: true,
+	key: `instances-${Date.now()}`,
+});
 
-// Watch for new data and update local ref if valid
-watch(
-	() => data.value?.instances,
-	(instances) => {
-		if (instances && Array.isArray(instances) && instances.length) {
-			lastGoodInstances.value = instances;
-		}
-	},
-	{ immediate: true }
-);
+const isMinecraftInstance = (instance: Instance): Boolean => instance.module === 'Minecraft';
+
+const instances = computed(() => {
+	const arr = data.value?.instances ?? [];
+	return arr.filter((instance) => !instance.suspended);
+});
+
+// Show loader only for the initial load
+const showLoader = computed(() => !isLoading.value);
 
 watch(
 	() => pending.value,
 	(isPending) => {
-		if (!initialLoadDone.value) {
-			if (isPending) {
-				showLoader.value = true;
-			} else {
-				setTimeout(() => {
-					showLoader.value = false;
-					initialLoadDone.value = true;
-				}, MIN_LOAD_TIME);
-			}
+		if (isLoading.value && !isPending) {
+			// Only set isLoading to false after the first fetch
+			setTimeout(() => {
+				isLoading.value = false;
+				hideThrobber();
+			}, 500);
+		}
+		if (isLoading.value && isPending) {
+			showThrobber();
 		}
 	},
 	{ immediate: true }
 );
 
-const isMinecraftInstance = (instance: Instance): Boolean => instance.module === 'Minecraft';
-
-// Auto-refresh logic
 let intervalId: ReturnType<typeof setInterval> | undefined;
 
 onMounted(() => {
 	intervalId = setInterval(() => {
 		refresh();
-	}, 2.5 * 1000);
+	}, 2500);
 });
 
 onUnmounted(() => {
 	if (intervalId) clearInterval(intervalId);
 });
-
-const instances = computed(() => (data.value?.instances?.length ? data.value.instances : lastGoodInstances.value));
 </script>
 <template>
 	<div class="page-wrapper min-h-screen flex flex-col justify-center items-center py-6 px-8 pt-10">
-		<FullpageLoad :show="showLoader" />
-		<!-- Instances Grid -->
 		<Transition name="fade" mode="out-in">
-			<template v-if="instances.length">
+			<div v-if="showLoader">
 				<div class="flex flex-wrap gap-8 max-w-screen-xl w-full justify-center">
 					<NuxtLink
-						v-for="instance in instances.filter((inst) => !inst.suspended)"
+						v-for="instance in instances"
 						:key="instance.instanceId"
 						:to="`/servers/${instance.instanceId}`"
-						class="instance-card group relative rounded-lg overflow-visible shadow-lg flex flex-col justify-between max-w-[425px] w-full hover:translate-y-1 transition-transform duration-200"
+						class="instance-card group relative rounded-lg overflow-visible shadow-lg flex flex-col justify-between w-[425px] hover:translate-y-1 transition-transform duration-200"
 						:data-id="instance.instanceId"
 					>
 						<!-- Background Layer: Clipped Blur -->
@@ -120,7 +115,7 @@ const instances = computed(() => (data.value?.instances?.length ? data.value.ins
 							<div class="text-center text-md text-gray-300 p-0 m-0">
 								<span>
 									{{ instance.moduleName || instance.module }}
-									<span v-if="instance.pack_version"> | Modpack {{ instance.pack_version }} </span>
+									<span v-if="instance.pack_version"> | Modpack {{ instance.pack_version }}</span>
 								</span>
 							</div>
 
@@ -157,12 +152,15 @@ const instances = computed(() => (data.value?.instances?.length ? data.value.ins
 									:currentPlayers="instance.server.users.RawValue"
 									:percent="instance.server.users.Percent"
 								/>
-								<server-connection :server-state="instance.server.state" :ip="instance.server.ip" :port="instance.server.port" />
+								<ServerConnection :server-state="instance.server.state" :ip="instance.server.ip" :port="instance.server.port" />
 							</div>
 						</div>
 					</NuxtLink>
 				</div>
-			</template>
+			</div>
+			<div v-else>
+				<BoilerCard :count="8" />
+			</div>
 		</Transition>
 	</div>
 </template>

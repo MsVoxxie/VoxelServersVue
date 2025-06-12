@@ -40,5 +40,10 @@ export interface Instance {
 }
 
 export interface InstanceResponse {
+	instance: Instance;
+}
+
+export interface InstancesResponse {
 	instances: Instance[];
+	[key: string]: any;
 }
