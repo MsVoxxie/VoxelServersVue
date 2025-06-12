@@ -78,7 +78,7 @@ onUnmounted(() => {
 						</div>
 
 						<!-- BorderStyling -->
-						<div class="absolute inset-0 border-2 pointer-events-none z-10 rounded-2xl" :class="borderColor(instance.server.state).border"></div>
+						<div class="absolute inset-0 border-2 pointer-events-none z-10 rounded-2xl transition-colors" :class="borderColor(instance.server.state).border"></div>
 
 						<!-- Corner Status Tag (Bookmark) -->
 						<div
