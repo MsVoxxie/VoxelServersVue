@@ -1,15 +1,23 @@
 <script setup lang="ts">
+definePageMeta({
+	layout: 'nav-header',
+});
+
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import type { Instance } from '../../types/instanceTypes';
 import borderColor from '../../utils/stateColor';
 import getInstances from '../../utils/fetchInstances';
+import FullpageLoad from '~/components/fullpageLoad.vue';
 
 const route = useRoute();
 const id = computed(() => route.params.id as string);
 
-const { data, refresh } = useAsyncData('instance', () => getInstances(id.value.trim()));
+const { data, refresh, pending } = useAsyncData('instance', () => getInstances(id.value.trim()));
 
 const lastGoodInstances = ref<Instance[]>([]);
+const initialLoadDone = ref(false);
+const showLoader = ref(true);
+const MIN_LOAD_TIME = 500; // ms
 
 // Watch for new data and update local ref if valid
 watch(
@@ -17,6 +25,23 @@ watch(
 	(instances) => {
 		if (instances && Array.isArray(instances) && instances.length) {
 			lastGoodInstances.value = instances;
+		}
+	},
+	{ immediate: true }
+);
+
+watch(
+	() => pending.value,
+	(isPending) => {
+		if (!initialLoadDone.value) {
+			if (isPending) {
+				showLoader.value = true;
+			} else {
+				setTimeout(() => {
+					showLoader.value = false;
+					initialLoadDone.value = true;
+				}, MIN_LOAD_TIME);
+			}
 		}
 	},
 	{ immediate: true }
@@ -41,10 +66,8 @@ const instance = computed(() => (data.value?.instances?.length ? data.value.inst
 </script>
 
 <template>
-	<div class="page-wrapper min-h-screen flex flex-col justify-center items-center py-6 px-8">
-		<!-- Community Badge -->
-		<NuxtLink to="/servers" class="text-center text-white font-bold text-4xl mb-8 transition hover:shadow-2xl hover:-translate-y-1">VoxelServers</NuxtLink>
-
+	<div class="page-wrapper min-h-screen flex flex-col justify-center items-center py-6 px-8 pt-10">
+		<FullpageLoad :show="showLoader" />
 		<!-- Instance Grid with Transition -->
 		<Transition name="fade" mode="out-in">
 			<div v-if="instance" key="instance" class="flex flex-wrap gap-8 max-w-screen-xl w-full justify-center">
@@ -135,45 +158,6 @@ const instance = computed(() => (data.value?.instances?.length ? data.value.inst
 								:percent="instance.server.users.Percent"
 							/>
 							<!-- <server-connection :server-state="instance.server.state" :ip="instance.server.ip" :port="instance.server.port" /> -->
-						</div>
-					</div>
-				</div>
-			</div>
-			<div v-else key="boiler" class="flex flex-wrap gap-8 max-w-screen-xl w-full justify-center">
-				<div class="instance-card group relative rounded-lg overflow-visible shadow-lg flex flex-col justify-between max-w-[425px] w-full animate-pulse">
-					<!-- Background Layer: Clipped Blur -->
-					<div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0">
-						<div class="absolute inset-0 bg-gray-900 rounded-2xl"></div>
-						<div class="w-full h-full bg-gray-800 filter blur-md"></div>
-						<div class="absolute inset-0 bg-black/50"></div>
-					</div>
-					<!-- BorderStyling -->
-					<div class="absolute inset-0 border-2 pointer-events-none z-10 rounded-2xl border-gray-700"></div>
-					<!-- Corner Status Tag (Bookmark) -->
-					<div
-						class="absolute top-3 -z-50 rounded-2xl text-sm font-bold select-none whitespace-nowrap border-2 shadow-md transition-all duration-300 border-gray-700 bg-gray-800"
-						style="min-width: 90px; min-height: 60px; text-align: center"
-					>
-						<span class="font-bold text-base inline-block text-transparent">Loading</span>
-					</div>
-					<!-- CardContent -->
-					<div class="relative z-30 p-4 space-y-4 flex-grow">
-						<div class="flex justify-center items-center space-x-4 mb-1">
-							<div class="h-7 w-40 bg-gray-700 rounded"></div>
-							<div class="h-6 w-12 bg-gray-700 rounded"></div>
-						</div>
-						<div class="flex justify-center">
-							<div class="h-5 w-32 bg-gray-700 rounded"></div>
-						</div>
-						<div class="flex justify-center">
-							<div class="h-4 w-56 bg-gray-700 rounded"></div>
-						</div>
-						<hr class="m-1 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400" />
-						<div class="flex flex-col space-y-3 my-2">
-							<div class="h-5 w-full bg-gray-700 rounded"></div>
-							<div class="h-5 w-full bg-gray-700 rounded"></div>
-							<div class="h-5 w-full bg-gray-700 rounded"></div>
-							<div class="h-8 w-full bg-gray-700 rounded"></div>
 						</div>
 					</div>
 				</div>

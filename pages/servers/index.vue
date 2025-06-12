@@ -1,12 +1,20 @@
 <script setup lang="ts">
+definePageMeta({
+	layout: 'nav-header',
+});
+
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import type { Instance } from '../../types/instanceTypes';
 import borderColor from '../../utils/stateColor';
 import getInstances from '../../utils/fetchInstances';
+import FullpageLoad from '~/components/fullpageLoad.vue';
 
-const { data, refresh } = useAsyncData('instances', () => getInstances());
+const { data, refresh, pending } = useAsyncData('instances', () => getInstances());
 
 const lastGoodInstances = ref<Instance[]>([]);
+const initialLoadDone = ref(false);
+const showLoader = ref(true);
+const MIN_LOAD_TIME = 500; // ms
 
 // Watch for new data and update local ref if valid
 watch(
@@ -14,6 +22,23 @@ watch(
 	(instances) => {
 		if (instances && Array.isArray(instances) && instances.length) {
 			lastGoodInstances.value = instances;
+		}
+	},
+	{ immediate: true }
+);
+
+watch(
+	() => pending.value,
+	(isPending) => {
+		if (!initialLoadDone.value) {
+			if (isPending) {
+				showLoader.value = true;
+			} else {
+				setTimeout(() => {
+					showLoader.value = false;
+					initialLoadDone.value = true;
+				}, MIN_LOAD_TIME);
+			}
 		}
 	},
 	{ immediate: true }
@@ -37,16 +62,11 @@ onUnmounted(() => {
 const instances = computed(() => (data.value?.instances?.length ? data.value.instances : lastGoodInstances.value));
 </script>
 <template>
-	<div class="page-wrapper min-h-screen flex flex-col justify-center items-center py-6 px-8">
-		<!-- Community Badge -->
-		<NuxtLink to="/servers" class="text-center text-white font-bold text-4xl mb-8 transition hover:shadow-2xl hover:-translate-y-1"> VoxelServers </NuxtLink>
-
+	<div class="page-wrapper min-h-screen flex flex-col justify-center items-center py-6 px-8 pt-10">
+		<FullpageLoad :show="showLoader" />
 		<!-- Instances Grid -->
 		<Transition name="fade" mode="out-in">
-			<template v-if="!instances.length">
-				<boilerCard :count="10" />
-			</template>
-			<template v-else>
+			<template v-if="instances.length">
 				<div class="flex flex-wrap gap-8 max-w-screen-xl w-full justify-center">
 					<NuxtLink
 						v-for="instance in instances.filter((inst) => !inst.suspended)"

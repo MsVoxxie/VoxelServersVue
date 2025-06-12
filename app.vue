@@ -3,8 +3,8 @@ import WaveBackground from './components/waveBackground.vue';
 </script>
 
 <template>
+	<WaveBackground />
 	<NuxtLayout>
-		<WaveBackground />
 		<NuxtPage />
 	</NuxtLayout>
 </template>
