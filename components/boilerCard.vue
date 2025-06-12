@@ -3,7 +3,7 @@
 		<div
 			v-for="n in count"
 			:key="n"
-			class="instance-card group relative rounded-lg overflow-visible shadow-lg flex flex-col justify-between w-[425px] animate-pulse"
+			class="instance-card group relative rounded-lg overflow-visible shadow-lg flex flex-col justify-between max-w-[425px] w-full animate-pulse"
 		>
 			<!-- Background Layer: Clipped Blur -->
 			<div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0">

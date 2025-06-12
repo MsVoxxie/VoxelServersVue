@@ -66,7 +66,7 @@ onUnmounted(() => {
 					<NuxtLink
 						v-if="instance"
 						:key="instance.instanceId"
-						class="instance-card group relative rounded-lg overflow-visible shadow-lg flex flex-col justify-between w-[425px] hover:translate-y-1 transition-transform duration-200"
+						class="instance-card group relative rounded-lg overflow-visible shadow-lg flex flex-col justify-between max-w-[425px] min-w-[350px] w-full hover:translate-y-1 transition-transform duration-200"
 						:data-id="instance.instanceId"
 					>
 						<!-- Background Layer: Clipped Blur -->
