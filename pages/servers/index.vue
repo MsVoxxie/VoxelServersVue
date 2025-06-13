@@ -48,22 +48,28 @@ onUnmounted(() => {
 	if (intervalId) clearInterval(intervalId);
 });
 
-useHead({
-	title: 'VoxelServers | Servers',
-	meta: [
-		{
-			name: 'description',
-			content: `All Servers Status page.`,
-		},
-		{
-			name: 'twitter:image',
-			content: '/img/SrvLogoAlt.png',
-		},
-		{
-			name: 'theme-color',
-			content: '#d5d5d5',
-		},
-	],
+// Build Description
+const metaDescription = computed(() => {
+	return `Status page for ${instances.value.length} servers.`;
+});
+watchEffect(() => {
+	useHead({
+		title: 'VoxelServers | Servers',
+		meta: [
+			{
+				name: 'description',
+				content: metaDescription.value,
+			},
+			{
+				name: 'twitter:image',
+				content: '/img/SrvLogoAlt.png',
+			},
+			{
+				name: 'theme-color',
+				content: '#d5d5d5',
+			},
+		],
+	});
 });
 </script>
 <template>
