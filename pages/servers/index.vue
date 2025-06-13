@@ -8,15 +8,9 @@ definePageMeta({
 
 const config = useRuntimeConfig();
 const baseUrl = config.public.instanceURI;
-const data = ref<InstancesResponse | null>(null);
-const pending = ref(true);
 const isLoading = ref(true);
 
-const fetchData = async () => {
-	pending.value = true;
-	data.value = await $fetch<InstancesResponse>(baseUrl);
-	pending.value = false;
-};
+const { data, pending, refresh } = await useAsyncData<InstancesResponse>('instances', () => $fetch(`${baseUrl}`));
 
 watch(
 	() => pending.value,
@@ -40,8 +34,8 @@ const instances = computed(() => {
 });
 
 onMounted(() => {
-	fetchData();
-	intervalId = setInterval(fetchData, 2500);
+	refresh();
+	intervalId = setInterval(refresh, 2500);
 });
 
 onUnmounted(() => {
@@ -52,24 +46,22 @@ onUnmounted(() => {
 const metaDescription = computed(() => {
 	return `Status page for ${instances.value.length} servers.`;
 });
-watchEffect(() => {
-	useHead({
-		title: 'VoxelServers | Servers',
-		meta: [
-			{
-				name: 'description',
-				content: metaDescription.value,
-			},
-			{
-				name: 'twitter:image',
-				content: '/img/SrvLogoAlt.png',
-			},
-			{
-				name: 'theme-color',
-				content: '#d5d5d5',
-			},
-		],
-	});
+useHead({
+	title: 'VoxelServers | Servers',
+	meta: [
+		{
+			name: 'description',
+			content: metaDescription.value,
+		},
+		{
+			name: 'twitter:image',
+			content: '/img/SrvLogoAlt.png',
+		},
+		{
+			name: 'theme-color',
+			content: '#d5d5d5',
+		},
+	],
 });
 </script>
 <template>

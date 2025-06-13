@@ -10,15 +10,9 @@ definePageMeta({
 const route = useRoute();
 const config = useRuntimeConfig();
 const baseUrl = config.public.instanceURI;
-const data = ref<InstancesResponse | null>(null);
-const pending = ref(true);
 const isLoading = ref(true);
 
-const fetchData = async () => {
-	pending.value = true;
-	data.value = await $fetch<InstancesResponse>(`${baseUrl}/${route.params.id}`);
-	pending.value = false;
-};
+const { data, pending, refresh } = await useAsyncData<InstancesResponse>('instance', () => $fetch(`${baseUrl}/${route.params.id}`));
 
 watch(
 	() => pending.value,
@@ -42,8 +36,8 @@ const instances = computed(() => {
 });
 
 onMounted(() => {
-	fetchData();
-	intervalId = setInterval(fetchData, 2500);
+	refresh();
+	intervalId = setInterval(refresh, 2500);
 });
 
 onUnmounted(() => {
@@ -52,24 +46,22 @@ onUnmounted(() => {
 
 const instance = computed(() => instances.value[0]);
 
-watchEffect(() => {
-	useHead({
-		title: `VoxelServers | ${instance.value?.friendlyName || 'Loading'}`,
-		meta: [
-			{
-				name: 'description',
-				content: `${instance.value?.friendlyName || 'Loading'} Status page.`,
-			},
-			{
-				name: 'twitter:image',
-				content: instance.value?.icon || '/img/SrvLogoAlt.png',
-			},
-			{
-				name: 'theme-color',
-				content: `${borderColor(instance.value?.server.state ?? 'Offline').meta || '#d5d5d5'}`,
-			},
-		],
-	});
+useHead({
+	title: `VoxelServers | ${instance.value?.friendlyName || 'Loading'}`,
+	meta: [
+		{
+			name: 'description',
+			content: `${instance.value?.friendlyName || 'Loading'} Status page.`,
+		},
+		{
+			name: 'twitter:image',
+			content: instance.value?.icon || '/img/SrvLogoAlt.png',
+		},
+		{
+			name: 'theme-color',
+			content: `${borderColor(instance.value?.server.state ?? 'Offline').meta || '#d5d5d5'}`,
+		},
+	],
 });
 </script>
 <template>
