@@ -21,15 +21,19 @@ const props = defineProps<{
 		<div v-if="props.module === 'Minecraft'">
 			<div class="players-container grid grid-cols-10 gap-2 justify-center mt-1">
 				<template v-for="i in props.maxPlayers" :key="i">
-					<div v-if="props.serverState === 'Running' && props.players && props.players[i - 1]">
-						<img
-							:src="fetchMCHead(props.players[i - 1].name)"
-							:alt="props.players[i - 1].name"
-							:title="props.players[i - 1].name"
-							class="w-6 h-6 rounded-full bg-gray-700 object-cover"
-						/>
+					<div>
+						<transition name="head-pop" mode="out-in">
+							<img
+								v-if="props.serverState === 'Running' && props.players && props.players[i - 1]"
+								:src="fetchMCHead(props.players[i - 1].name)"
+								:alt="props.players[i - 1].name"
+								:title="props.players[i - 1].name"
+								class="w-6 h-6 rounded-full object-cover"
+								:key="props.players[i - 1]?.name"
+							/>
+							<div v-else class="w-6 h-6 rounded-full bg-gray-600/30" :key="'empty-' + i"></div>
+						</transition>
 					</div>
-					<div v-else class="w-6 h-6 rounded-full bg-gray-600/30"></div>
 				</template>
 			</div>
 		</div>
@@ -41,3 +45,20 @@ const props = defineProps<{
 		</div>
 	</div>
 </template>
+
+<style scoped>
+.head-pop-enter-from,
+.head-pop-leave-to {
+	transform: scale(0.5);
+	opacity: 0;
+}
+.head-pop-enter-active,
+.head-pop-leave-active {
+	transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.head-pop-enter-to,
+.head-pop-leave-from {
+	transform: scale(1);
+	opacity: 1;
+}
+</style>
