@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import type { InstancesResponse } from '../../types/instanceTypes';
+import borderColor from '~/utils/stateColor';
 
 definePageMeta({
 	layout: 'nav-header',
@@ -49,20 +50,23 @@ onUnmounted(() => {
 	if (intervalId) clearInterval(intervalId);
 });
 
+const instance = computed(() => instances.value[0]);
+
 useHead({
-	title: 'VoxelServers | Servers',
+	title: `VoxelServers | ${instance.value?.friendlyName || 'Loading'}`,
+
 	meta: [
 		{
 			name: 'description',
-			content: `All Servers Status page.`,
+			content: `${instance.value?.friendlyName || 'Loading'} Status page.`,
 		},
 		{
 			name: 'twitter:image',
-			content: '/img/SrvLogoAlt.png',
+			content: instance.value?.icon || '/img/SrvLogoAlt.png',
 		},
 		{
 			name: 'theme-color',
-			content: '#d5d5d5',
+			content: `${borderColor(instance.value?.server.state ?? 'Offline').meta || '#d5d5d5'}`,
 		},
 	],
 });
