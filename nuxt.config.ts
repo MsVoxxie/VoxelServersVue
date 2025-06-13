@@ -18,6 +18,6 @@ export default defineNuxtConfig({
 			link: [{ rel: 'icon', type: 'image/x-icon', href: '/img/favicon.ico' }],
 		},
 	},
-	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/scripts', '@nuxt/ui', '@nuxtjs/tailwindcss', '@hypernym/nuxt-anime'],
+	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/scripts', '@nuxt/ui', '@nuxtjs/tailwindcss', '@hypernym/nuxt-anime', 'nuxt-lucide-icons'],
 	css: ['~/assets/css/main.css'],
 });

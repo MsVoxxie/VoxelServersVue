@@ -3,11 +3,13 @@ const { throbberState } = useThrobber();
 </script>
 
 <template>
-	<transition name="fade">
-		<div v-if="throbberState.value" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 blur-fade">
-			<span class="loader" />
-		</div>
-	</transition>
+	<div>
+		<transition name="fade">
+			<div v-show="throbberState.value" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 blur-fade">
+				<span class="loader" />
+			</div>
+		</transition>
+	</div>
 </template>
 
 <style scoped>

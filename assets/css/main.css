@@ -1,7 +1,27 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-/* Example fade transition */
+:root {
+	--vx_primary: #212234;
+	--vx_accent1: #282a3f;
+	--vx_accent2: #2e3149;
+	--vx_accent3: #333752;
+	--vx_accent4: #383d5a;
+	--vx_accent5: #3d4261;
+	--vx_accent6: #414767;
+	--vx_accent7: #5b4c73;
+	--vx_accent8: #5b4c73;
+	--vx_accent9: #5b4c73;
+	--vx_mid1: #5b4c73;
+	--vx_mid2: #6e76a9;
+	--vx_mid3: #7097c3;
+	--vx_mid4: #7eb5ca;
+	--vx_mid5: #8ec8b9;
+	--vx_mid6: #b9d2b5;
+	--vx_mid7: #d3c6a3;
+	--vx_mid8: #e0afa5;
+}
+
 .fade-enter-active,
 .fade-leave-active {
 	transition: opacity 0.5s;
@@ -9,4 +29,14 @@
 .fade-enter-from,
 .fade-leave-to {
 	opacity: 0;
+}
+
+.boiler-fade-enter-active {
+	transition: opacity 0.5s;
+}
+.boiler-fade-enter-from {
+	opacity: 0;
+}
+.boiler-fade-enter-to {
+	opacity: 1;
 }
