@@ -8,7 +8,6 @@ export default defineNuxtConfig({
 			mcHeadsURI: 'https://vsb.voxxie.me/v1/client/playerheads',
 		},
 	},
-
 	ui: {
 		prefix: 'Nuxt',
 	},
@@ -18,6 +17,6 @@ export default defineNuxtConfig({
 			link: [{ rel: 'icon', type: 'image/x-icon', href: '/img/favicon.ico' }],
 		},
 	},
-	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/scripts', '@nuxt/ui', '@nuxtjs/tailwindcss', '@hypernym/nuxt-anime', 'nuxt-lucide-icons'],
+	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/scripts', '@nuxt/ui', '@hypernym/nuxt-anime', 'nuxt-lucide-icons', '@nuxtjs/tailwindcss'],
 	css: ['~/assets/css/main.css'],
 });

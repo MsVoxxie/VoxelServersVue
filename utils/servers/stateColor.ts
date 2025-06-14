@@ -1,4 +1,4 @@
-import type { ServerState } from '../types/instanceTypes';
+import type { ServerState } from '../../types/servers/instanceTypes';
 
 const borderColor = (serverState: ServerState) => {
 	// AMP (CubeCoders) style status colors

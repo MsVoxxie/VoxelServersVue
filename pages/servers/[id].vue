@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
-import type { InstancesResponse } from '../../types/instanceTypes';
-import borderColor from '~/utils/stateColor';
+import type { InstancesResponse } from '../../types/servers/instanceTypes';
+import BoilerCard from '~/components/servers/boilerCard.vue';
+import InstanceCard from '~/components/servers/instanceCard.vue';
+import borderColor from '~/utils/servers/stateColor';
 
 definePageMeta({
-	layout: 'nav-header',
+	layout: 'servers-nav-header',
 });
 
 const route = useRoute();

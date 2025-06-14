@@ -93,8 +93,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Instance } from '~/types/instanceTypes';
-import borderColor from '~/utils/stateColor';
+import type { Instance } from '~/types/servers/instanceTypes';
+import borderColor from '~/utils/servers/stateColor';
+import ServerMeter from './serverMeter.vue';
+import PlayerCount from './playerCount.vue';
+import ServerConnection from './serverConnection.vue';
 
 const props = defineProps<{
 	instance: Instance;

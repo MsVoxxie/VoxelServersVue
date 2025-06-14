@@ -1,4 +1,4 @@
-import type { InstanceResponse } from '~/types/instanceTypes';
+import type { InstanceResponse } from '~/types/servers/instanceTypes';
 
 export default async function fetchInstances() {
 	const config = useRuntimeConfig();

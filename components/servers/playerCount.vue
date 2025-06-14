@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import fetchMCHead from '~/utils/fetchMCHead';
+import fetchMCHead from '~/utils/servers/fetchMCHead';
 
 const props = defineProps<{
 	module: string;

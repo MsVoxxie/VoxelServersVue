@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
 :root {
+	--pixel-font: 'Press Start 2P', monospace;
 	--vx_primary: #212234;
 	--vx_accent1: #282a3f;
 	--vx_accent2: #2e3149;
@@ -20,6 +22,35 @@
 	--vx_mid6: #b9d2b5;
 	--vx_mid7: #d3c6a3;
 	--vx_mid8: #e0afa5;
+
+	/* Home */
+	--text_col: #3b7b8f;
+	--letter-shadow: drop-shadow(0 0 0.75rem rgba(118, 186, 250, 0.63));
+}
+
+.use-p2-font {
+	font-family: var(--pixel-font);
+}
+
+#logo {
+	text-align: center;
+	animation: flickering 0.07s infinite;
+}
+
+#bg {
+	z-index: -999;
+	background-size: cover;
+	image-rendering: pixelated;
+	background-color: black;
+	width: 100%;
+	position: absolute;
+}
+
+.letter {
+	display: inline;
+	height: 60px;
+	filter: var(--letter-shadow);
+	image-rendering: pixelated;
 }
 
 .fade-enter-active,
@@ -39,4 +70,84 @@
 }
 .boiler-fade-enter-to {
 	opacity: 1;
+}
+
+.crt-overlay {
+	position: relative;
+}
+
+.crt-overlay:before {
+	content: '';
+	position: fixed;
+	opacity: 0.2;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 1000;
+	background-image: url(/assets/img/crt_overlay.png);
+	background-repeat: all;
+	background-position: 0px 0px;
+	animation-name: Static;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+	animation-timing-function: steps(4);
+	box-shadow: inset 0px 0px 10em rgb(0 0 0 / 40%);
+}
+
+.crt-overlay:after {
+	content: '';
+	position: fixed;
+	left: 0;
+	top: 0;
+	opacity: 0.5;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 1000;
+	background-image: url(/assets/img/crt_overlay2.png);
+	background-repeat: all;
+	background-position: 0px 0px;
+	animation-name: Static;
+	animation-duration: 0.8s;
+	animation-iteration-count: infinite;
+	animation-timing-function: steps(4);
+}
+
+@keyframes Static {
+	0% {
+		background-position: 0px 0px;
+	}
+	100% {
+		background-position: 0px 4px;
+	}
+}
+
+@keyframes flickering {
+	0%,
+	100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #3b7b8f, 0 0 10px #3b7b8f, 0 0 20px #3b7b8f, 0 0 40px #00fff7, 0 0 80px #00fff7;
+	}
+	10% {
+		opacity: 0.9;
+		text-shadow: 0 0 2px #3b7b8f, 0 0 4px #3b7b8f, 0 0 8px #3b7b8f, 0 0 16px #00fff7, 0 0 32px #00fff7;
+	}
+	20% {
+		opacity: 0.75;
+		text-shadow: none;
+	}
+	22% {
+		opacity: 1;
+		text-shadow: 0 0 5px #3b7b8f, 0 0 10px #3b7b8f, 0 0 20px #3b7b8f, 0 0 40px #00fff7, 0 0 80px #00fff7;
+	}
+	63% {
+		opacity: 0.8;
+		text-shadow: 0 0 2px #3b7b8f, 0 0 4px #3b7b8f;
+	}
+	64% {
+		opacity: 1;
+		text-shadow: 0 0 5px #3b7b8f, 0 0 10px #3b7b8f, 0 0 20px #3b7b8f, 0 0 40px #00fff7, 0 0 80px #00fff7;
+	}
 }
