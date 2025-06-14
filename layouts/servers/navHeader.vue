@@ -2,7 +2,7 @@
 	<header class="fixed top-0 left-0 z-50 bg-[var(--vx_primary)] shadow-lg border-r-2 border-b-2 rounded-br-2xl" :style="{ opacity: opacity }">
 		<div class="max-w-10xl mx-auto flex items-center h-9 px-5">
 			<NuxtLink to="/servers" class="flex items-center gap-2 font-bold text-2xl hover:text-dimmed transition group" title="Go to Servers">
-				<img src="/assets/img/VS_Fox.png" alt="VoxelServers Fox Logo" class="w-6 h-6 object-contain" aria-hidden="true" />
+				<img src="/img/VS_Fox.png" class="w-6 h-6 object-contain" aria-hidden="true" />
 				<span>VoxelServers</span>
 			</NuxtLink>
 			<nav class="ml-auto flex gap-6">

@@ -86,7 +86,7 @@
 	height: 100%;
 	pointer-events: none;
 	z-index: 1000;
-	background-image: url(/assets/img/crt_overlay.png);
+	background-image: url(/img/crt_overlay.png);
 	background-repeat: all;
 	background-position: 0px 0px;
 	animation-name: Static;
@@ -106,7 +106,7 @@
 	height: 100%;
 	pointer-events: none;
 	z-index: 1000;
-	background-image: url(/assets/img/crt_overlay2.png);
+	background-image: url(/img/crt_overlay2.png);
 	background-repeat: all;
 	background-position: 0px 0px;
 	animation-name: Static;

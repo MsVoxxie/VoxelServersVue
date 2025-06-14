@@ -12,7 +12,7 @@ const config = useRuntimeConfig();
 const baseUrl = config.public.instanceURI;
 const isLoading = ref(true);
 
-const { data, pending, refresh } = await useAsyncData<InstancesResponse>('instances', () => $fetch(`${baseUrl}`));
+const { data, pending, refresh } = useAsyncData<InstancesResponse>('instances', () => $fetch(`${baseUrl}`));
 
 watch(
 	() => pending.value,

@@ -26,7 +26,6 @@ const props = defineProps<{
 							<img
 								v-if="props.serverState === 'Running' && props.players && props.players[i - 1]"
 								:src="fetchMCHead(props.players[i - 1].name)"
-								:alt="props.players[i - 1].name"
 								:title="props.players[i - 1].name"
 								class="w-6 h-6 rounded-full object-cover"
 								:key="props.players[i - 1]?.name"
