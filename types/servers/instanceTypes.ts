@@ -29,6 +29,7 @@ export interface Instance {
 	friendlyName: string;
 	welcomeMessage: string;
 	description: string;
+	releaseDate: string;
 	running: boolean;
 	module: string;
 	moduleName: string | null;

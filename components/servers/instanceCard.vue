@@ -86,7 +86,8 @@
 					:currentPlayers="instance.server.users.RawValue"
 					:percent="instance.server.users.Percent"
 				/>
-				<ServerConnection :server-state="instance.server.state" :ip="instance.server.ip" :port="instance.server.port" />
+				<ServerPending v-if="instance.releaseDate" :releaseDate="instance.releaseDate" />
+				<ServerConnection v-else :server-state="instance.server.state" :ip="instance.server.ip" :port="instance.server.port" />
 			</div>
 		</div>
 	</NuxtLink>
@@ -98,6 +99,7 @@ import borderColor from '~/utils/servers/stateColor';
 import ServerMeter from './serverMeter.vue';
 import PlayerCount from './playerCount.vue';
 import ServerConnection from './serverConnection.vue';
+import ServerPending from './serverPending.vue';
 
 const props = defineProps<{
 	instance: Instance;

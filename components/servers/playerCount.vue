@@ -38,7 +38,7 @@ const props = defineProps<{
 		</div>
 		<!-- Other modules: Show bar -->
 		<div v-else>
-			<div class="w-full bg-gray-700 rounded-full h-2 mt-1 users-bar overflow-hidden">
+			<div class="w-full bg-gray-700 rounded-full h-2 mt-1 users-bar overflow-hidden mb-6.5">
 				<div class="bg-purple-500 h-2 rounded-full transition-all duration-1000" :style="{ width: `${props.serverState === 'Running' ? props.percent ?? 0 : 0}%` }"></div>
 			</div>
 		</div>
