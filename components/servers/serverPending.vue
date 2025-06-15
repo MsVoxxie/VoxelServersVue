@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col items-center justify-center text-center">
-		<span v-if="!isPending" class="font-mono text-lg text-yellow-400"> Releases in {{ countdown }} </span>
-		<span v-else class="font-mono text-lg text-red-500"> Pending... </span>
+		<span v-if="!isPending" class="font-mono text-lg text-orange-300"> Releases in {{ countdown }} </span>
+		<span v-else class="font-mono text-lg text-green-300"> Awaiting Release... </span>
 	</div>
 </template>
 
