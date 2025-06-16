@@ -32,7 +32,7 @@
 			<div class="text-white font-bold text-2xl text-center flex justify-center items-center leading-tight space-x-4 mb-1">
 				<span>{{ instance.friendlyName || instance.instanceName }}</span>
 
-				<!-- Modpack Link -->
+				<!-- Modpack Link (Minecraft) -->
 				<a
 					v-if="isMinecraftInstance(instance) && instance.welcomeMessage"
 					:href="instance.welcomeMessage"
@@ -43,6 +43,13 @@
 				>
 					<NuxtBadge trailing-icon="i-lucide-arrow-right" size="sm" color="primary" class="pt-0 pb-0 text-sm font-bold">Link</NuxtBadge>
 				</a>
+
+				<!-- Seven Days To Die currentTime -->
+				<span v-else-if="instance.moduleName === 'Seven Days To Die' && instance.server.currentTime" class="pt-1 mt-0.5 text-sm">
+					<span v-if="instance.server.currentTime.day === 7" class="text-red-500"> Day {{ instance.server.currentTime.day }} </span>
+					<span v-else> Day {{ instance.server.currentTime.day }} </span>
+					<span> | {{ instance.server.currentTime.time }} </span>
+				</span>
 			</div>
 
 			<!-- Module -->
