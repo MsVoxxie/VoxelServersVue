@@ -21,7 +21,6 @@ export interface ServerInfo {
 	performance: InstanceMetric;
 	ip: string;
 	port: number;
-	bloodMoonFrequency: number;
 	currentTime: null | {
 		day: number;
 		time: string;

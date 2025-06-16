@@ -43,12 +43,6 @@
 				>
 					<NuxtBadge trailing-icon="i-lucide-arrow-right" size="sm" color="primary" class="pt-0 pb-0 text-sm font-bold">Link</NuxtBadge>
 				</a>
-
-				<!-- Seven Days To Die currentTime -->
-				<span v-else-if="instance.moduleName === 'Seven Days To Die' && instance.server.currentTime" class="pt-1 mt-0.5 text-sm">
-					<span v-if="instance.server.currentTime.day === 7" class="text-red-500"> Day {{ instance.server.currentTime.day }} </span>
-					<span v-else> Day {{ instance.server.currentTime.day }} </span>
-				</span>
 			</div>
 
 			<!-- Module -->
@@ -56,6 +50,10 @@
 				<span>
 					{{ instance.moduleName || instance.module }}
 					<span v-if="instance.pack_version"> | Modpack {{ instance.pack_version }}</span>
+					<span v-else-if="instance.moduleName === 'Seven Days To Die' && instance.server.currentTime">
+						| <span v-if="instance.server.currentTime.day === 7" class="text-red-500"> Day {{ instance.server.currentTime.day }} </span>
+						<span v-else> Day {{ instance.server.currentTime.day }} </span>
+					</span>
 				</span>
 			</div>
 
