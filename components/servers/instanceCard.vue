@@ -48,7 +48,6 @@
 				<span v-else-if="instance.moduleName === 'Seven Days To Die' && instance.server.currentTime" class="pt-1 mt-0.5 text-sm">
 					<span v-if="instance.server.currentTime.day === 7" class="text-red-500"> Day {{ instance.server.currentTime.day }} </span>
 					<span v-else> Day {{ instance.server.currentTime.day }} </span>
-					<span> | {{ instance.server.currentTime.time }} </span>
 				</span>
 			</div>
 
