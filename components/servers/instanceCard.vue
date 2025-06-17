@@ -84,6 +84,7 @@
 				/>
 				<PlayerCount
 					:module="instance.module"
+					:moduleName="instance.moduleName"
 					:serverState="instance.server.state"
 					:players="instance.players"
 					:maxPlayers="instance.server.users.MaxValue"

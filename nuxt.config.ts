@@ -6,6 +6,7 @@ export default defineNuxtConfig({
 		public: {
 			instanceURI: 'https://vsb.voxxie.me/v1/server/data/instances',
 			mcHeadsURI: 'https://vsb.voxxie.me/v1/client/playerheads',
+			steamHeadsURI: 'https://vsb.voxxie.me/v1/client/steamheads',
 		},
 	},
 	ui: {
