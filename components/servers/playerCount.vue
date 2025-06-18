@@ -36,7 +36,7 @@ function getPlayerHeadUrl(player: { name: string; uuid?: string }) {
 		</div>
 		<!-- Supported games: Show heads -->
 		<div v-if="supportedGames.includes(gameModule)">
-			<div class="players-container grid grid-cols-10 gap-2 justify-center mt-1 mb-4">
+			<div class="players-container flex justify-between gap-2 mt-1 mb-4">
 				<template v-for="i in maxPlayers" :key="i">
 					<div>
 						<transition name="head-pop" mode="out-in">
