@@ -51,7 +51,7 @@
 					{{ instance.moduleName || instance.module }}
 					<span v-if="instance.pack_version"> | Modpack {{ instance.pack_version }}</span>
 					<span v-else-if="instance.moduleName === 'Seven Days To Die' && instance.server.currentTime">
-						| <span v-if="instance.server.currentTime.day === '7'" class="text-red-500"> Day {{ instance.server.currentTime.day }} </span>
+						| <span v-if="Number(instance.server.currentTime.day) % 7 === 0" class="text-red-500"> Day {{ instance.server.currentTime.day }} </span>
 						<span v-else> Day {{ instance.server.currentTime.day }} </span>
 					</span>
 				</span>
