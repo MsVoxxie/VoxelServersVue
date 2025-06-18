@@ -22,7 +22,7 @@ export interface ServerInfo {
 	ip: string;
 	port: number;
 	currentTime: null | {
-		day: number;
+		day: string;
 		time: string;
 	};
 }
