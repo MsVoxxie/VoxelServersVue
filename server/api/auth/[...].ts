@@ -30,7 +30,6 @@ export default NuxtAuthHandler({
 						Authorization: `Bearer ${tokens.access_token}`,
 					},
 				});
-				console.log('Fetched guilds:', guilds);
 				return {
 					id: profile.id,
 					name: profile.username,
