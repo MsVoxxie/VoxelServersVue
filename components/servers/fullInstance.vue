@@ -15,9 +15,14 @@
 					</div>
 					<!-- Player card (slides in/out over placeholder) -->
 					<Transition name="player-slide">
-						<div v-if="players[i - 1]" :key="players[i - 1].id" class="absolute inset-0 flex items-center gap-2 bg-gray-800/80 px-3 py-2 rounded-lg w-full" style="z-index: 1">
+						<div
+							v-if="players[i - 1]"
+							:key="players[i - 1].uuid"
+							class="absolute inset-0 flex items-center gap-2 bg-gray-800/80 px-3 py-2 rounded-lg w-full"
+							style="z-index: 1"
+						>
 							<playerHead :player="players[i - 1]" :module="instance.module" :moduleName="instance.moduleName" />
-							<span v-if="players[i - 1].status" class="text-xs text-green-400 ml-2">{{ players[i - 1].status }}</span>
+							<span v-if="players[i - 1].name" class="text-xs text-green-400 ml-2">{{ players[i - 1].name }}</span>
 						</div>
 					</Transition>
 				</div>
@@ -36,7 +41,18 @@
 							{{ instance.server.state }}
 						</span>
 					</h1>
-					<div class="text-gray-300 text-lg mt-1">{{ instance.moduleName || instance.module }}</div>
+					<div class="flex items-center gap-2 mt-1">
+						<span class="text-gray-300 text-lg">{{ instance.moduleName || instance.module }}</span>
+						<a
+							v-if="instance.module === 'Minecraft' && instance.welcomeMessage"
+							:href="instance.welcomeMessage"
+							target="_blank"
+							rel="noopener"
+							class="inline-flex hover:translate-y-0.5 transition-transform duration-200"
+						>
+							<NuxtBadge trailing-icon="i-lucide-arrow-right" size="sm" color="primary" class="pt-0 pb-0 text-sm font-bold">Modpack</NuxtBadge>
+						</a>
+					</div>
 				</div>
 			</div>
 
@@ -74,22 +90,19 @@
 					<h2 class="text-lg font-semibold text-white">Server Details</h2>
 					<div class="flex justify-between px-1">
 						<div>
-							<div class="text-gray-400">IP Address:</div>
-							<div class="text-white font-mono">{{ instance.server.ip }}:{{ instance.server.port }}</div>
-							<div class="text-gray-400 mt-2">Modpack Version:</div>
-							<div class="text-white">{{ instance.pack_version || 'N/A' }}</div>
-							<div class="text-gray-400 mt-2">Description:</div>
-							<div class="text-white">{{ instance.description || 'No description.' }}</div>
-						</div>
-						<div>
-							<div>
-								<div class="text-gray-400">Placeholder Title</div>
-								<div class="text-white">Placeholder Data</div>
-								<div class="text-gray-400 mt-2">Placeholder Title</div>
-								<div class="text-white">Placeholder Data</div>
-								<div class="text-gray-400 mt-2">Placeholder Title</div>
-								<div class="text-white">Placeholder Data</div>
+							<div v-if="instance.server.currentTime !== null" class="text-gray-400">Current State:</div>
+							<div class="flex items-center gap-2">
+								<div v-if="instance.server.currentTime !== null" :class="Number(instance.server.currentTime.day) % 7 === 0 ? 'text-red-500' : 'text-white'">
+									Day {{ instance.server.currentTime.day }}
+								</div>
+								<div v-if="instance.server.currentTime !== null" class="text-white">| {{ instance.server.currentTime.time }}</div>
 							</div>
+							<div v-if="instance.pack_version" class="text-gray-400">Modpack Version:</div>
+							<div v-if="instance.pack_version" class="text-white">{{ instance.pack_version || 'N/A' }}</div>
+							<div class="text-gray-400">Description:</div>
+							<div class="text-white">{{ instance.description || 'No description.' }}</div>
+							<div class="text-gray-400">IP Address:</div>
+							<ServerConnection text="" serverState="Running" :ip="instance.server.ip" :port="instance.server.port" />
 						</div>
 					</div>
 				</div>
@@ -100,17 +113,17 @@
 						<div>
 							<div class="text-gray-400">External Ping:</div>
 							<div class="text-white font-mono text-lg">{{ network.externalPing }} ms</div>
-							<div class="text-gray-400 mt-2">Average:</div>
+							<div class="text-gray-400">Average:</div>
 							<div class="text-white">{{ network.externalAvg }} ms</div>
-							<div class="text-gray-400 mt-2">Median:</div>
+							<div class="text-gray-400">Median:</div>
 							<div class="text-white">{{ network.externalMedian }} ms</div>
 						</div>
 						<div>
 							<div class="text-gray-400">Internal Up:</div>
 							<div class="text-white">{{ network.internalUp }} MB/s</div>
-							<div class="text-gray-400 mt-2">Internal Down:</div>
+							<div class="text-gray-400">Internal Down:</div>
 							<div class="text-white">{{ network.internalDown }} MB/s</div>
-							<div class="text-gray-400 mt-2">Last Spike:</div>
+							<div class="text-gray-400">Last Spike:</div>
 							<div class="text-white">{{ network.lastSpike }}</div>
 						</div>
 					</div>
@@ -118,39 +131,7 @@
 			</section>
 
 			<!-- Chatbox/Console (Always visible, blurred if not authenticated) -->
-			<section class="bg-gray-900/80 rounded-xl p-4 shadow flex flex-col gap-1 relative">
-				<h2 class="text-lg font-semibold text-white mb-2">Server Chat</h2>
-				<div class="relative">
-					<div ref="chatBox" class="h-20 overflow-y-auto bg-black/60 rounded p-2 mb-2">
-						<div v-for="msg in messages" :key="msg.id" class="text-xs text-white mb-1">
-							<span class="font-bold text-primary-400">{{ msg.user }}:</span> {{ msg.text }}
-						</div>
-						<!-- Overlay for unauthenticated users or if linkStatus is false, only over chat area -->
-						<div v-if="!isAuthenticated || !props.linkStatus" class="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-xs rounded z-10">
-							<span class="text-white text-lg font-bold">
-								{{ !isAuthenticated ? 'Authentication Required' : 'Server Unlinked' }}
-							</span>
-						</div>
-					</div>
-				</div>
-				<div class="flex gap-2">
-					<input
-						v-model="chatInput"
-						@keyup.enter="sendMessage"
-						type="text"
-						:disabled="!isAuthenticated || !props.linkStatus"
-						placeholder="Type a message..."
-						class="flex-1 bg-gray-800 text-white rounded px-3 py-2 outline-none"
-					/>
-					<button
-						@click="sendMessage"
-						:disabled="!isAuthenticated || !props.linkStatus"
-						class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded font-bold disabled:opacity-50"
-					>
-						Send
-					</button>
-				</div>
-			</section>
+			<ServerChat :instanceId="instanceId" :linkStatus="props.linkStatus" :isAuthenticated="isAuthenticated" :nickOrName="nickOrName" />
 		</main>
 	</section>
 </template>
@@ -159,9 +140,11 @@
 import { ref, computed, nextTick, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useAuth } from '#imports';
 import borderColor from '~/utils/servers/stateColor';
+import type { Instance } from '~/types/servers/instanceTypes';
+import ServerConnection from './serverConnection.vue';
 import BarGraph from './barGraph.vue';
 import playerHead from './basicPlayer.vue';
-import { sendChatMessage } from '~/utils/servers/chatCalls';
+import ServerChat from './serverChat.vue';
 
 const { data } = useAuth();
 const isAuthenticated = computed(() => !!data.value?.user);
@@ -170,48 +153,13 @@ const nickOrName = computed(() => data.value?.user.member?.nick || data.value?.u
 const route = useRoute();
 const instanceId = route.params.id as string;
 
-interface ChatMessage {
-	id: number;
-	user: string;
-	text: string;
-}
-
-const messages = ref<ChatMessage[]>([]);
-const chatInput = ref('');
-const chatBox = ref<HTMLElement | null>(null);
-
-async function sendMessage() {
-	if (chatInput.value.trim()) {
-		messages.value.push({ id: Date.now(), user: nickOrName.value || 'Unknown', text: chatInput.value });
-
-		try {
-			// Use the shared sendChatMessage utility
-			await sendChatMessage(nickOrName.value || 'You', instanceId, chatInput.value);
-		} catch (error) {
-			console.error('Failed to send chat message:', error);
-			// Optionally show a toast or error message to the user here
-		}
-
-		chatInput.value = '';
-		scrollChatToBottom();
-	}
-}
-
-function scrollChatToBottom() {
-	nextTick(() => {
-		if (chatBox.value) {
-			chatBox.value.scrollTop = chatBox.value.scrollHeight;
-		}
-	});
-}
-
-watch(messages, scrollChatToBottom, { deep: true });
-
 const props = defineProps<{
-	instance: any;
+	instance: Instance;
 	network: any;
 	linkStatus: boolean;
 }>();
+
+console.log(props.instance.server.currentTime);
 
 function copyIp() {
 	navigator.clipboard.writeText(`${props.instance.server.ip}:${props.instance.server.port}`);
@@ -219,80 +167,7 @@ function copyIp() {
 
 const maxPlayers = computed(() => props.instance.server.users?.MaxValue || 0);
 const players = computed(() => props.instance.players || []);
-
-// WebSocket client for real-time chat
-let ws: WebSocket | null = null;
-let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
-let reconnectAttempts = 0;
-const maxReconnectAttempts = 10;
-
-function getWebSocketUrl(instanceId: string) {
-	const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-	let host = window.location.host;
-	// If running on localhost, force port 3002 for dev
-	if (host.startsWith('localhost')) {
-		host = 'localhost:3002';
-	}
-	// If proxied in production, use /ws path
-	return `${protocol}://${host}/ws?instance=${instanceId}`;
-}
-
-function connectWebSocket() {
-	ws = new WebSocket(getWebSocketUrl(instanceId));
-
-	ws.onopen = () => {
-		console.log('[WS CLIENT] Connected');
-		reconnectAttempts = 0;
-	};
-
-	ws.onmessage = (event) => {
-		console.log('[WS CLIENT] Received message:', event.data);
-		const msg = JSON.parse(event.data);
-		messages.value.push({
-			id: Date.now(),
-			user: msg.user,
-			text: msg.message,
-		});
-		scrollChatToBottom();
-	};
-
-	ws.onclose = () => {
-		console.log('[WS CLIENT] Disconnected');
-		attemptReconnect();
-	};
-
-	ws.onerror = (err) => {
-		console.error('[WS CLIENT] Error:', err);
-		ws?.close();
-	};
-}
-
-function attemptReconnect() {
-	if (reconnectAttempts < maxReconnectAttempts) {
-		const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000); // Exponential backoff, max 30s
-		reconnectTimeout = setTimeout(() => {
-			reconnectAttempts++;
-			console.log(`[WS CLIENT] Reconnecting... attempt ${reconnectAttempts}`);
-			connectWebSocket();
-		}, delay);
-	} else {
-		console.error('[WS CLIENT] Max reconnect attempts reached.');
-	}
-}
-
-onMounted(() => {
-	if (props.linkStatus) {
-		messages.value.push({ id: 1, user: 'SERVER', text: 'Initialized' });
-		connectWebSocket();
-	} else {
-		messages.value.push({ id: 0, user: 'SERVER', text: 'Disconnected' });
-	}
-});
-
-onBeforeUnmount(() => {
-	if (ws) ws.close();
-	if (reconnectTimeout) clearTimeout(reconnectTimeout);
-});
+// ...existing code...
 </script>
 
 <style scoped>

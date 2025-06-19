@@ -41,11 +41,11 @@
 					@click.stop
 					class="inline-flex hover:translate-y-0.5 transition-transform duration-200"
 				>
-					<NuxtBadge trailing-icon="i-lucide-arrow-right" size="sm" color="primary" class="pt-0 pb-0 text-sm font-bold">Link</NuxtBadge>
+					<NuxtBadge trailing-icon="i-lucide-arrow-right" size="sm" color="primary" class="pt-0 pb-0 text-sm font-bold">Modpack</NuxtBadge>
 				</a>
 			</div>
 
-			<!-- Module -->
+			<!-- Module and Modpack Version -->
 			<div class="text-center text-md text-gray-300 p-0 m-0">
 				<span>
 					{{ instance.moduleName || instance.module }}
@@ -92,7 +92,7 @@
 					:percent="instance.server.users.Percent"
 				/>
 				<ServerPending v-if="instance.releaseDate" :releaseDate="instance.releaseDate" />
-				<ServerConnection v-else :server-state="instance.server.state" :ip="instance.server.ip" :port="instance.server.port" />
+				<ServerConnection v-else text="Connect" :server-state="instance.server.state" :ip="instance.server.ip" :port="instance.server.port" />
 			</div>
 		</div>
 	</NuxtLink>
