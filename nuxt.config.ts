@@ -20,7 +20,7 @@ export default defineNuxtConfig({
 		},
 	},
 	auth: {
-		baseURL: '/api/auth',
+		baseURL: `${process.env.NUXT_AUTH_ORIGIN}/api/auth`,
 		provider: {
 			type: 'authjs',
 			trustHost: false,
