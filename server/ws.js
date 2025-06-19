@@ -3,7 +3,7 @@ import { WebSocketServer } from 'ws';
 // Store clients by instance
 const instanceClients = {};
 
-const wss = new WebSocketServer({ port: 3002 }); // You can change the port if needed
+const wss = new WebSocketServer({ port: 2002 }); // You can change the port if needed
 
 wss.on('connection', (ws, req) => {
 	try {

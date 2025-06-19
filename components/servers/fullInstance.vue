@@ -129,15 +129,13 @@
 					</div>
 				</div>
 			</section>
-
-			<!-- Chatbox/Console (Always visible, blurred if not authenticated) -->
-			<ServerChat :instanceId="instanceId" :linkStatus="props.linkStatus" :isAuthenticated="isAuthenticated" :nickOrName="nickOrName" />
+			<ServerChat :instanceId="instanceId" :linkStatus="linkStatus" :isAuthenticated="isAuthenticated" :nickOrName="nickOrName" />
 		</main>
 	</section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, watch, onMounted, onBeforeUnmount } from 'vue';
+import { computed } from 'vue';
 import { useAuth } from '#imports';
 import borderColor from '~/utils/servers/stateColor';
 import type { Instance } from '~/types/servers/instanceTypes';
@@ -159,15 +157,8 @@ const props = defineProps<{
 	linkStatus: boolean;
 }>();
 
-console.log(props.instance.server.currentTime);
-
-function copyIp() {
-	navigator.clipboard.writeText(`${props.instance.server.ip}:${props.instance.server.port}`);
-}
-
 const maxPlayers = computed(() => props.instance.server.users?.MaxValue || 0);
 const players = computed(() => props.instance.players || []);
-// ...existing code...
 </script>
 
 <style scoped>

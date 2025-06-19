@@ -88,7 +88,7 @@ function getWebSocketUrl(instanceId: string) {
 	const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 	let host = window.location.host;
 	if (host.startsWith('localhost')) {
-		host = 'localhost:3002';
+		host = 'localhost:2002';
 	}
 	return `${protocol}://${host}/ws?instance=${instanceId}`;
 }
@@ -98,9 +98,9 @@ function connectWebSocket() {
 	ws.onopen = () => {
 		console.log('[WS CLIENT] Connected');
 		reconnectAttempts = 0;
+		messages.value.push({ id: Date.now(), user: 'SERVER', text: 'Connected.' });
 	};
 	ws.onmessage = (event) => {
-		console.log('[WS CLIENT] Received message:', event.data);
 		const msg = JSON.parse(event.data);
 		messages.value.push({
 			id: Date.now(),
@@ -111,6 +111,7 @@ function connectWebSocket() {
 	};
 	ws.onclose = () => {
 		console.log('[WS CLIENT] Disconnected');
+		messages.value.push({ id: Date.now(), user: 'SERVER', text: 'Disconnected.' });
 		attemptReconnect();
 	};
 	ws.onerror = (err) => {
@@ -124,7 +125,7 @@ function attemptReconnect() {
 		const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
 		reconnectTimeout = setTimeout(() => {
 			reconnectAttempts++;
-			console.log(`[WS CLIENT] Reconnecting... attempt ${reconnectAttempts}`);
+			console.log(`[WS CLIENT] Reconnecting... [${reconnectAttempts}/${maxReconnectAttempts}]`);
 			connectWebSocket();
 		}, delay);
 	} else {
