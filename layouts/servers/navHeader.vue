@@ -36,7 +36,7 @@
 		<div class="flex flex-col sm:flex-row sm:items-center flex-1 min-w-0">
 			<span class="text-white text-base font-bold leading-tight whitespace-nowrap">
 				<span v-if="user">
-					Welcome back, <span class="text-primary-400">{{ user.name.charAt(0).toUpperCase() + user.name.slice(1) }}</span>
+					Welcome back, <span class="text-primary-400">{{ nickOrName }}</span>
 				</span>
 				<span v-else> Welcome to <span class="text-primary-400">VoxelServers</span> </span>
 			</span>
@@ -52,6 +52,8 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { LucideLogOut } from 'lucide-vue-next';
 import { siDiscord } from 'simple-icons';
 const { signIn, signOut, data } = useAuth();
+const nickOrName = computed(() => data.value?.user.member?.nick || data.value?.user.name || 'Unknown');
+
 function loginWithDiscord() {
 	signIn('discord', { callbackUrl: window.location.pathname });
 }

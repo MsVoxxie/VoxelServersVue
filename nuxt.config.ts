@@ -3,11 +3,12 @@ export default defineNuxtConfig({
 	compatibilityDate: '2025-05-15',
 	devtools: { enabled: true },
 	runtimeConfig: {
-		authSecret: '0yjQik5YGzzJWU/itp+sEj2yH3pxXCBHrtFqvg4aiubZft+enBoJI1tF3AE=',
+		authSecret: process.env.AUTH_SECRET,
+		botSecret: process.env.DISCORD_BOT_TOKEN,
+		apiSecret: process.env.API_SECRET,
 		public: {
-			instanceURI: 'https://vsb.voxxie.me/v1/server/data/instances',
-			mcHeadsURI: 'https://vsb.voxxie.me/v1/client/playerheads',
-			steamHeadsURI: 'https://vsb.voxxie.me/v1/client/steamheads',
+			baseApiURI: 'https://vsb.voxxie.me/v1',
+			voxelGuild: '997533753087889500',
 		},
 	},
 	ui: {

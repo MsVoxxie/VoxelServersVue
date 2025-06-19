@@ -9,7 +9,7 @@ definePageMeta({
 });
 
 const config = useRuntimeConfig();
-const baseUrl = config.public.instanceURI;
+const baseUrl = `${config.public.baseApiURI}/server/data/instances`;
 const isLoading = ref(true);
 
 const { data, pending, refresh } = useAsyncData<InstancesResponse>('instances', () => $fetch(`${baseUrl}`));

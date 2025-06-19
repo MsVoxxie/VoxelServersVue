@@ -3,7 +3,7 @@ import type { InstanceResponse } from '~/types/servers/instanceTypes';
 export default async function fetchInstances() {
 	const config = useRuntimeConfig();
 	const route = useRoute();
-	const baseUrl = config.public.instanceURI;
+	const baseUrl = `${config.public.baseApiURI}/server/data/instances`;
 
 	const getInstances = async () => {
 		const response = await useFetch<InstanceResponse>(baseUrl, { method: 'GET' });

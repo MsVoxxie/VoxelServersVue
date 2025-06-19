@@ -4,6 +4,8 @@ import type { InstancesResponse } from '../../types/servers/instanceTypes';
 import BoilerCard from '~/components/servers/boilerCard.vue';
 import InstanceCard from '~/components/servers/instanceCard.vue';
 import borderColor from '~/utils/servers/stateColor';
+import FullInstance from '~/components/servers/fullInstance.vue';
+import type { NetworkData } from '~/types/servers/networkTypes';
 
 definePageMeta({
 	layout: 'servers-nav-header',
@@ -11,10 +13,12 @@ definePageMeta({
 
 const route = useRoute();
 const config = useRuntimeConfig();
-const baseUrl = config.public.instanceURI;
+const instanceUrl = `${config.public.baseApiURI}/server/data/instances`;
+const networkUrl = `${config.public.baseApiURI}/server/network`;
 const isLoading = ref(true);
 
-const { data, pending, refresh } = useAsyncData<InstancesResponse>('instance', () => $fetch(`${baseUrl}/${route.params.id}`));
+const { data, pending, refresh } = useAsyncData<InstancesResponse>('instance', () => $fetch(`${instanceUrl}/${route.params.id}`));
+const { data: networkData, pending: networkPending, refresh: networkRefresh } = useAsyncData<NetworkData>('network', () => $fetch(`${networkUrl}`));
 
 watch(
 	() => pending.value,
@@ -76,7 +80,8 @@ useHead({
 					</div>
 					<div v-else class="page-wrapper flex flex-col justify-center items-center py-6 px-8" style="min-height: calc(100vh - 2.5rem)">
 						<div class="flex flex-wrap gap-8 max-w-screen-xl w-full justify-center">
-							<InstanceCard v-for="instance in instances" :key="instance.instanceId" :instance="instance" />
+							<FullInstance v-if="instance && networkData" :instance="instance" :linkStatus="instance.linkStatus" :network="networkData" />
+							<!-- <InstanceCard v-for="instance in instances" :key="instance.instanceId" :instance="instance" /> -->
 						</div>
 					</div>
 				</div>

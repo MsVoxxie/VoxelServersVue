@@ -42,6 +42,7 @@ export interface Instance {
 	suspended: boolean;
 	server: ServerInfo;
 	players: Array<{ name: string; uuid: string }>;
+	linkStatus: boolean;
 }
 
 export interface InstanceResponse {
