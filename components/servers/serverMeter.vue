@@ -29,7 +29,13 @@ const displayUnit = computed(() => (props.unit === 'MB' ? 'GB' : props.unit));
 			<span>{{ displayValue }} / {{ displayMax }} {{ displayUnit }}</span>
 		</div>
 		<div class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
-			<div class="h-2 rounded-full transition-all duration-1000" :style="{ width: (value / maxValue) * 100 + '%', backgroundColor: color }"></div>
+			<div
+				class="h-2 rounded-full transition-all duration-1000"
+				:style="{
+					width: (Math.min(value, maxValue) / maxValue) * 100 + '%',
+					backgroundColor: color,
+				}"
+			></div>
 		</div>
 	</div>
 </template>
