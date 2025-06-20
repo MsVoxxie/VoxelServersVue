@@ -15,13 +15,8 @@ wss.on('connection', (ws, req) => {
 		}
 		if (!instanceClients[instance]) instanceClients[instance] = [];
 		instanceClients[instance].push(ws);
-		// Only log client-facing connection
-		console.log(`[WS] Client connected for instance ${instance}. Total: ${instanceClients[instance].length}`);
-
 		ws.on('close', () => {
 			instanceClients[instance] = instanceClients[instance].filter((client) => client !== ws);
-			// Only log client-facing disconnection
-			console.log(`[WS] Client disconnected from instance ${instance}. Remaining: ${instanceClients[instance].length}`);
 		});
 	} catch (e) {
 		ws.close();

@@ -98,7 +98,6 @@ function connectWebSocket() {
 	ws.onopen = () => {
 		console.log('[WS CLIENT] Connected');
 		reconnectAttempts = 0;
-		messages.value.push({ id: Date.now(), user: 'SERVER', text: 'Connected.' });
 	};
 	ws.onmessage = (event) => {
 		const msg = JSON.parse(event.data);
@@ -111,7 +110,6 @@ function connectWebSocket() {
 	};
 	ws.onclose = () => {
 		console.log('[WS CLIENT] Disconnected');
-		messages.value.push({ id: Date.now(), user: 'SERVER', text: 'Disconnected.' });
 		attemptReconnect();
 	};
 	ws.onerror = (err) => {
@@ -135,7 +133,7 @@ function attemptReconnect() {
 
 onMounted(() => {
 	if (props.isAuthenticated && props.linkStatus) {
-		messages.value.push({ id: 1, user: 'SERVER', text: 'Initializing...' });
+		messages.value.push({ id: 1, user: 'SERVER', text: 'Ready' });
 		connectWebSocket();
 	} else if (!props.linkStatus) {
 		messages.value.push({ id: 0, user: 'SERVER', text: 'Disconnected' });

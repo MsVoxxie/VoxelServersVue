@@ -52,23 +52,29 @@ onUnmounted(() => {
 
 const instance = computed(() => instances.value[0]);
 
-useHead({
-	title: `VoxelServers | ${instance.value?.friendlyName || 'Loading'}`,
-	meta: [
-		{
-			name: 'description',
-			content: `${instance.value?.friendlyName || 'Loading'} Status page.`,
-		},
-		{
-			name: 'twitter:image',
-			content: instance.value?.icon || '/img/SrvLogoAlt.png',
-		},
-		{
-			name: 'theme-color',
-			content: `${borderColor(instance.value?.server.state ?? 'Offline').meta || '#d5d5d5'}`,
-		},
-	],
-});
+watch(
+	instance,
+	(val) => {
+		useHead({
+			title: `VoxelServers | ${val?.friendlyName || 'Loading'}`,
+			meta: [
+				{
+					name: 'description',
+					content: `${val?.friendlyName || 'Loading'} Status page.`,
+				},
+				{
+					name: 'twitter:image',
+					content: val?.icon || '/img/SrvLogoAlt.png',
+				},
+				{
+					name: 'theme-color',
+					content: `${borderColor(val?.server.state ?? 'Offline').meta || '#d5d5d5'}`,
+				},
+			],
+		});
+	},
+	{ immediate: true }
+);
 </script>
 <template>
 	<div>
