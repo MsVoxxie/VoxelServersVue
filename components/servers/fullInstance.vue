@@ -22,7 +22,6 @@
 							style="z-index: 1"
 						>
 							<playerHead :player="players[i - 1]" :module="instance.module" :moduleName="instance.moduleName" />
-							<span v-if="players[i - 1].name" class="text-xs text-green-400 ml-2">{{ players[i - 1].name }}</span>
 						</div>
 					</Transition>
 				</div>
