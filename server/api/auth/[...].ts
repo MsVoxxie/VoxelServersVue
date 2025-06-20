@@ -8,8 +8,8 @@ export default NuxtAuthHandler({
 			id: 'discord',
 			name: 'Discord',
 			type: 'oauth',
-			clientId: '1384990061660995746',
-			clientSecret: process.env.DISCORD_CLIENT_SECRET,
+			clientId: useRuntimeConfig().clientId,
+			clientSecret: useRuntimeConfig().clientSecret,
 			authorization: {
 				url: 'https://discord.com/oauth2/authorize',
 				params: {

@@ -3,6 +3,8 @@ export default defineNuxtConfig({
 	compatibilityDate: '2025-05-15',
 	devtools: { enabled: true },
 	runtimeConfig: {
+		clientId: process.env.DISCORD_CLIENT_ID,
+		clientSecret: process.env.DISCORD_CLIENT_SECRET,
 		authSecret: process.env.AUTH_SECRET,
 		botSecret: process.env.DISCORD_BOT_TOKEN,
 		apiSecret: process.env.API_SECRET,
