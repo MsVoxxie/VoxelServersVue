@@ -6,6 +6,7 @@
 				<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 					<div>
 						<h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Voxelservers</h1>
+						<span class="text-gray-400">Still a W.I.P 🙂</span>
 					</div>
 
 					<!-- Quick Stats -->
