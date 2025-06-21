@@ -7,7 +7,7 @@
 		<!-- Background Layer: Clipped Blur -->
 		<div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0">
 			<!-- Solid background layer to hide tag borders -->
-			<div class="absolute inset-0 bg-gray-900 rounded-2xl"></div>
+			<div class="absolute inset-0 bg-black/80 rounded-2xl"></div>
 			<img :src="instance.icon" class="w-full h-full object-cover filter blur-md" />
 			<div class="absolute inset-0 bg-black/50"></div>
 		</div>
