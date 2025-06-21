@@ -18,7 +18,16 @@
 				:style="tooltipStyle"
 			>
 				<template v-if="title.toLowerCase() === 'cpu' || unit === '%'"> {{ Math.min(values[hoveredIndex], max).toFixed(0) }}% </template>
-				<template v-else-if="unit === 'MB'"> {{ (Math.min(values[hoveredIndex], max) / 1024).toFixed(1) }} GB </template>
+				<template v-else-if="unit === 'MB'">
+					<template v-if="values[hoveredIndex] > max">
+						<span
+							>{{ (max / 1024).toFixed(1) }} GB + <span style="color: #ef4444">{{ ((values[hoveredIndex] - max) / 1024).toFixed(1) }} GB Swap</span></span
+						>
+					</template>
+					<template v-else>
+						<span>{{ (values[hoveredIndex] / 1024).toFixed(1) }} GB</span>
+					</template>
+				</template>
 				<template v-else> {{ Math.min(values[hoveredIndex], max) }}{{ unit ? ` ${unit}` : '' }} </template>
 			</div>
 			<!-- Bars -->
@@ -26,17 +35,48 @@
 				v-for="(v, i) in values"
 				:key="i"
 				:style="{
-					height: `${Math.max(4, (Math.min(v, max) / (max || 1)) * 100)}%`,
 					width: `${barWidth}px`,
-					background: color,
-					borderRadius: '3px',
 					position: 'relative',
+					height: '100%',
+					display: 'flex',
+					alignItems: 'flex-end',
 				}"
 				class="transition-all duration-50 cursor-pointer"
 				@mouseenter="hoveredIndex = i"
 				@mouseleave="hoveredIndex = null"
 				@mousemove="onBarMouseMove($event)"
-			/>
+			>
+				<!-- Main bar: always render up to max -->
+				<div
+					:style="{
+						height: `${Math.max(4, (Math.min(v, max) / (max || 1)) * 100)}%`,
+						width: '100%',
+						background: color,
+						borderRadius: '3px',
+						position: 'absolute',
+						bottom: 0,
+						left: 0,
+						zIndex: 1,
+					}"
+					class="transition-all duration-200"
+				></div>
+				<!-- Swap overlay: only if v > max, overlays the bottom part of the bar -->
+				<div
+					v-if="unit === 'MB' && v > max"
+					:style="{
+						height: `${((v - max) / (max || 1)) * 100}%`,
+						width: '100%',
+						background: 'rgba(255, 50, 0, 0.50)',
+						borderRadius: '0 0 3px 3px',
+						position: 'absolute',
+						bottom: 0,
+						left: 0,
+						zIndex: 2,
+						pointerEvents: 'none',
+					}"
+					class="transition-all duration-200"
+				></div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -76,7 +116,7 @@ onMounted(() => {
 	intervalId = setInterval(() => {
 		values.value.push(props.value);
 		while (values.value.length > barCount.value) values.value.shift();
-	}, 2500);
+	}, 1000);
 });
 onUnmounted(() => {
 	if (resizeObserver && container.value) resizeObserver.unobserve(container.value);

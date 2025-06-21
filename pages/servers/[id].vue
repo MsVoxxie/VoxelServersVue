@@ -34,7 +34,8 @@ watch(
 	{ immediate: true }
 );
 
-let intervalId: ReturnType<typeof setInterval> | undefined;
+let instanceIntervalId: ReturnType<typeof setInterval> | undefined;
+let networkIntervalId: ReturnType<typeof setInterval> | undefined;
 
 const instances = computed(() => {
 	const arr = data.value?.instances ?? [];
@@ -43,11 +44,14 @@ const instances = computed(() => {
 
 onMounted(() => {
 	refresh();
-	intervalId = setInterval(refresh, 2500);
+	networkRefresh();
+	instanceIntervalId = setInterval(refresh, 2500);
+	networkIntervalId = setInterval(networkRefresh, 2500);
 });
 
 onUnmounted(() => {
-	if (intervalId) clearInterval(intervalId);
+	if (instanceIntervalId) clearInterval(instanceIntervalId);
+	if (networkIntervalId) clearInterval(networkIntervalId);
 });
 
 const instance = computed(() => instances.value[0]);
