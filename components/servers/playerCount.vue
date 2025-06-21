@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import fetchMCHead from '~/utils/servers/fetchMCHead';
 import fetchSteamHead from '~/utils/servers/fetchSteamHead';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 const supportedGames = ['minecraft', 'seven days to die'];
 
@@ -26,6 +27,37 @@ function getPlayerHeadUrl(player: { name: string; uuid?: string }) {
 	}
 	return undefined;
 }
+
+const containerRef = ref<HTMLElement | null>(null);
+let scrollInterval: ReturnType<typeof setInterval> | null = null;
+
+function startScrollRight() {
+	const container = containerRef.value;
+	if (!container) return;
+	clearInterval(scrollInterval as any);
+	scrollInterval = setInterval(() => {
+		if (container.scrollLeft < container.scrollWidth - container.clientWidth) {
+			container.scrollLeft += 2;
+		}
+	}, 16); // ~60fps
+}
+
+function scrollBackLeft() {
+	const container = containerRef.value;
+	if (!container) return;
+	clearInterval(scrollInterval as any);
+	scrollInterval = setInterval(() => {
+		if (container.scrollLeft > 0) {
+			container.scrollLeft -= 6;
+		} else {
+			clearInterval(scrollInterval as any);
+		}
+	}, 16);
+}
+
+onBeforeUnmount(() => {
+	clearInterval(scrollInterval as any);
+});
 </script>
 
 <template>
@@ -36,7 +68,12 @@ function getPlayerHeadUrl(player: { name: string; uuid?: string }) {
 		</div>
 		<!-- Supported games: Show heads -->
 		<div v-if="supportedGames.includes(gameModule)">
-			<div class="players-container flex justify-between gap-2 mt-1 mb-4">
+			<div
+				ref="containerRef"
+				class="players-container flex flex-nowrap overflow-x-auto gap-2 mt-1 mb-4 justify-around"
+				@mouseenter="startScrollRight"
+				@mouseleave="scrollBackLeft"
+			>
 				<template v-for="i in maxPlayers" :key="i">
 					<div>
 						<transition name="head-pop" mode="out-in">
@@ -76,5 +113,13 @@ function getPlayerHeadUrl(player: { name: string; uuid?: string }) {
 .head-pop-leave-from {
 	transform: scale(1);
 	opacity: 1;
+}
+
+.players-container::-webkit-scrollbar {
+	display: none;
+}
+.players-container {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 </style>
