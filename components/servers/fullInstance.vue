@@ -7,7 +7,7 @@
 				<span class="text-sm text-gray-300 font-mono">{{ players.length }} / {{ maxPlayers }}</span>
 			</div>
 			<!-- Player list fills sidebar and scrolls if needed -->
-			<div class="flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative">
+			<div class="flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative max-h-[690px] grow">
 				<div v-for="i in maxPlayers" :key="i" class="relative" style="min-height: 44px">
 					<div class="flex items-center gap-2 bg-gray-800/40 px-3 py-2 rounded-lg opacity-60 w-full transition-opacity duration-150" :class="{ 'opacity-0': players[i - 1] }">
 						<div class="w-6 h-6 rounded-full bg-gray-700/40"></div>
