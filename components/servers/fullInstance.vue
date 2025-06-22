@@ -29,11 +29,42 @@
 		</aside>
 
 		<!-- Main Content -->
-		<main class="flex-1 flex flex-col gap-2 p-4">
+		<main class="flex-1 flex flex-col gap-2 p-4 relative">
+			<!-- Auth Section - Top Right Corner -->
+			<div class="absolute top-4 right-4 z-10">
+				<div v-if="user" class="flex items-center gap-3">
+					<div class="text-right">
+						<div class="text-white text-sm font-semibold">Welcome back,</div>
+						<div class="text-primary-400 text-sm">{{ nickOrName }}</div>
+					</div>
+					<div class="relative w-10 h-10 group cursor-pointer" @click="logout" title="Log out">
+						<img
+							:src="user.image"
+							:alt="user.name"
+							class="absolute inset-0 w-10 h-10 rounded-full border-2 border-white/20 shadow object-cover transition-all duration-500 group-hover:opacity-0 group-hover:rotate-180"
+							v-if="user.image"
+						/>
+						<span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
+							<LucideLogOut class="w-8 h-8 text-red-400 bg-white/80 rounded-full p-1.5" />
+						</span>
+					</div>
+				</div>
+				<button
+					v-else
+					type="button"
+					@click="loginWithDiscord"
+					class="flex items-center gap-2 group bg-gray-900/80 hover:bg-gray-800/80 border border-white/20 rounded-xl px-4 py-2 shadow transition-colors"
+					title="Sign in with Discord"
+				>
+					<img :src="discordIcon" class="w-6 h-6 object-contain" aria-hidden="true" />
+					<span class="text-white text-sm font-medium">Sign in</span>
+				</button>
+			</div>
+
 			<!-- Header: Game Icon, Name, Status -->
-			<div class="flex items-center gap-6 mb-2">
+			<div class="flex items-center gap-6 mb-2 pr-20">
 				<img :src="instance.icon" class="h-25 rounded-xl shadow-lg border-2 border-white/20 bg-gray-900 object-cover" />
-				<div>
+				<div class="flex-1">
 					<h1 class="text-4xl font-bold text-white flex items-center gap-2">
 						{{ instance.friendlyName || instance.instanceName }}
 						<span class="text-base px-3 py-1 rounded-full font-semibold ml-2" :class="borderColor(instance.server.state).bg">
@@ -135,6 +166,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { LucideLogOut } from 'lucide-vue-next';
+import { siDiscord } from 'simple-icons';
 import { useAuth } from '#imports';
 import borderColor from '~/utils/servers/stateColor';
 import type { Instance } from '~/types/servers/instanceTypes';
@@ -143,9 +176,28 @@ import BarGraph from './barGraph.vue';
 import playerHead from './basicPlayer.vue';
 import ServerChat from './serverChat.vue';
 
-const { data } = useAuth();
+const { signIn, signOut, data } = useAuth();
 const isAuthenticated = computed(() => !!data.value?.user);
 const nickOrName = computed(() => data.value?.user.member?.nick || data.value?.user.name || 'Unknown');
+
+interface CustomUser {
+	name: string;
+	image: string;
+	id?: string;
+	guilds?: any[];
+}
+
+const user = computed(() => data.value?.user as CustomUser | undefined);
+
+const discordIcon = 'data:image/svg+xml;utf8,' + encodeURIComponent(siDiscord.svg.replace(/fill="[^"]*"/g, 'fill="#5865F2"'));
+
+function loginWithDiscord() {
+	signIn('discord', { callbackUrl: window.location.pathname });
+}
+
+function logout() {
+	signOut({ callbackUrl: window.location.pathname });
+}
 
 const route = useRoute();
 const instanceId = route.params.id as string;

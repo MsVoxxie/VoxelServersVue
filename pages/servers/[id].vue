@@ -2,14 +2,13 @@
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import type { InstancesResponse } from '../../types/servers/instanceTypes';
 import BoilerCard from '~/components/servers/boilerCard.vue';
-import InstanceCard from '~/components/servers/instanceCard.vue';
 import borderColor from '~/utils/servers/stateColor';
 import FullInstance from '~/components/servers/fullInstance.vue';
 import type { NetworkData } from '~/types/servers/networkTypes';
 
-definePageMeta({
-	layout: 'servers-nav-header',
-});
+// definePageMeta({
+// 	layout: 'servers-nav-header',
+// });
 
 const route = useRoute();
 const config = useRuntimeConfig();

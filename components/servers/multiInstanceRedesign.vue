@@ -3,31 +3,31 @@
 		<!-- Header Section -->
 		<header class="w-full backdrop-blur-sm border-b border-white/20 sticky top-0 z-40">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-				<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+				<div class="flex items-center justify-between gap-4">
 					<div>
 						<h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Voxelservers</h1>
 						<span class="text-gray-400">Still a W.I.P 🙂</span>
 					</div>
 
 					<!-- Quick Stats -->
-					<div class="flex gap-3 sm:gap-6 text-center">
-						<div class="bg-gray-900/80 rounded-xl px-3 sm:px-4 py-2 sm:py-3 border border-white/20 flex-1 sm:flex-none">
-							<div class="text-lg sm:text-2xl font-bold text-green-400">{{ runningServers }}</div>
+					<div class="flex gap-2 sm:gap-4 text-center">
+						<div class="bg-gray-900/80 rounded-xl px-2 sm:px-4 py-2 sm:py-3 border border-white/20">
+							<div class="text-sm sm:text-xl font-bold text-green-400">{{ runningServers }}</div>
 							<div class="text-xs text-gray-400">Running</div>
 						</div>
-						<div class="bg-gray-900/80 rounded-xl px-3 sm:px-4 py-2 sm:py-3 border border-white/20 flex-1 sm:flex-none">
-							<div class="text-lg sm:text-2xl font-bold text-blue-400">{{ totalPlayers }}</div>
+						<div class="bg-gray-900/80 rounded-xl px-2 sm:px-4 py-2 sm:py-3 border border-white/20">
+							<div class="text-sm sm:text-xl font-bold text-blue-400">{{ totalPlayers }}</div>
 							<div class="text-xs text-gray-400">Players</div>
 						</div>
-						<div class="bg-gray-900/80 rounded-xl px-3 sm:px-4 py-2 sm:py-3 border border-white/20 flex-1 sm:flex-none">
-							<div class="text-lg sm:text-2xl font-bold text-white">{{ filteredInstances.length }}</div>
+						<div class="bg-gray-900/80 rounded-xl px-2 sm:px-4 py-2 sm:py-3 border border-white/20">
+							<div class="text-sm sm:text-xl font-bold text-white">{{ filteredInstances.length }}</div>
 							<div class="text-xs text-gray-400">Total</div>
 						</div>
 					</div>
 				</div>
 
 				<!-- Filter and Search Bar -->
-				<div class="mt-4 sm:mt-6 flex flex-col lg:flex-row gap-3 sm:gap-4">
+				<div class="mt-4 sm:mt-6 flex gap-3 sm:gap-4">
 					<div class="flex-1 relative">
 						<input
 							v-model="searchQuery"
@@ -38,10 +38,10 @@
 						<Search class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
 					</div>
 
-					<div class="flex gap-2 flex-wrap sm:flex-nowrap">
+					<div class="flex gap-2">
 						<select
 							v-model="selectedModule"
-							class="bg-gray-900/80 border border-white/20 rounded-xl px-3 sm:px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors flex-1 sm:flex-none min-w-0"
+							class="bg-gray-900/80 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors min-w-0"
 						>
 							<option value="">All Games</option>
 							<option v-for="module in uniqueModules" :key="module" :value="module">
@@ -51,23 +51,15 @@
 
 						<select
 							v-model="selectedStatus"
-							class="bg-gray-900/80 border border-white/20 rounded-xl px-3 sm:px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors flex-1 sm:flex-none min-w-0"
+							class="bg-gray-900/80 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors min-w-0"
 						>
 							<option value="">All Status</option>
 							<option value="Running">Running</option>
-							<option value="Stopped">Stopped</option>
 							<option value="Starting">Starting</option>
-							<option value="Stopping">Stopping</option>
+							<option value="Stopped">Stopped</option>
+							<option value="Offline">Offline</option>
+							<option value="Suspended">Suspended</option>
 						</select>
-
-						<button
-							@click="toggleView"
-							class="bg-gray-900/80 border border-white/20 rounded-xl px-3 sm:px-4 py-3 text-white hover:bg-gray-800/80 transition-colors flex items-center gap-2 flex-shrink-0"
-							:title="viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'"
-						>
-							<component :is="viewMode === 'grid' ? List : Grid3X3" class="w-4 h-4" />
-							<span class="hidden sm:inline text-sm">{{ viewMode === 'grid' ? 'List' : 'Grid' }}</span>
-						</button>
 					</div>
 				</div>
 			</div>
@@ -94,69 +86,68 @@
 					</button>
 				</div>
 
-				<!-- Grid View -->
-				<div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-					<TransitionGroup name="fade" tag="div" class="contents">
-						<InstanceCard v-for="instance in filteredInstances" :key="instance.instanceId" :instance="instance" class="hover:scale-105 transition-transform duration-200" />
-					</TransitionGroup>
-				</div>
-
 				<!-- List View -->
-				<div v-else class="space-y-4">
-					<TransitionGroup name="slide" tag="div" class="space-y-4">
-						<div
-							v-for="instance in filteredInstances"
-							:key="instance.instanceId"
-							class="bg-black/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-white/30 transition-all duration-200 shadow-2xl"
-						>
-							<NuxtLink :to="`/servers/${instance.instanceId}`" class="flex items-center gap-6 group">
-								<!-- Server Icon -->
-								<div class="flex-shrink-0">
-									<img :src="instance.icon" :alt="instance.friendlyName || instance.instanceName" class="w-45 rounded-lg object-cover border-2 border-white/20 bg-gray-900" />
-								</div>
+				<div v-else class="max-h-96 overflow-y-auto">
+					<div class="space-y-4">
+						<TransitionGroup name="slide" tag="div" class="space-y-4">
+							<div
+								v-for="instance in filteredInstances"
+								:key="instance.instanceId"
+								class="bg-black/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-white/30 transition-all duration-200 shadow-2xl"
+							>
+								<NuxtLink :to="`/servers/${instance.instanceId}`" class="flex items-center gap-6 group">
+									<!-- Server Icon -->
+									<div class="flex-shrink-0">
+										<img
+											:src="instance.icon"
+											:alt="instance.friendlyName || instance.instanceName"
+											class="w-45 rounded-lg object-cover border-2 border-white/20 bg-gray-900"
+										/>
+									</div>
 
-								<!-- Server Info -->
-								<div class="flex-grow min-w-0">
-									<div class="flex items-center gap-3 mb-2">
-										<h3 class="text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">
-											{{ instance.friendlyName || instance.instanceName }}
-										</h3>
-										<span class="px-3 py-1 rounded-full text-xs font-semibold" :class="borderColor(instance.server.state).bg">
-											{{ instance.server.state }}
-										</span>
+									<!-- Server Info -->
+									<div class="flex-grow min-w-0">
+										<div class="flex items-center gap-3 mb-2">
+											<h3 class="text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">
+												{{ instance.friendlyName || instance.instanceName }}
+											</h3>
+											<span class="px-3 py-1 rounded-full text-xs font-semibold" :class="borderColor(instance.server.state).bg">
+												{{ instance.server.state }}
+											</span>
+										</div>
+										<div class="text-gray-300 text-sm mb-2">
+											{{ instance.moduleName || instance.module }}
+											<span v-if="instance.pack_version" class="text-gray-400"> | Modpack {{ instance.pack_version }} </span>
+										</div>
+										<p class="text-gray-400 text-sm truncate">
+											{{ instance.description || 'No description available' }}
+										</p>
 									</div>
-									<div class="text-gray-300 text-sm mb-2">
-										{{ instance.moduleName || instance.module }}
-										<span v-if="instance.pack_version" class="text-gray-400"> | Modpack {{ instance.pack_version }} </span>
-									</div>
-									<p class="text-gray-400 text-sm truncate">
-										{{ instance.description || 'No description available' }}
-									</p>
-								</div>
 
-								<!-- Server Stats -->
-								<div class="hidden lg:flex items-center gap-6 text-center">
-									<div>
-										<div class="text-lg font-bold text-white">{{ instance.server.users?.RawValue || 0 }}/{{ instance.server.users?.MaxValue || 0 }}</div>
-										<div class="text-xs text-gray-400">Players</div>
+									<!-- Server Stats -->
+									<div class="hidden md:flex items-center gap-6 text-center">
+										<div>
+											<div class="text-lg font-bold text-white">{{ instance.server.users?.RawValue || 0 }}/{{ instance.server.users?.MaxValue || 0 }}</div>
+											<div class="text-xs text-gray-400">Players</div>
+										</div>
+										<div>
+											<div class="text-lg font-bold text-blue-400">{{ Math.round(instance.server.cpu?.RawValue || 0) }}%</div>
+											<div class="text-xs text-gray-400">CPU</div>
+										</div>
+										<div>
+											<div class="text-lg font-bold text-green-400">{{ ((instance.server.memory?.RawValue || 0) / 1024).toFixed(1) }}GB</div>
+											<div class="text-xs text-gray-400">Memory</div>
+										</div>
 									</div>
-									<div>
-										<div class="text-lg font-bold text-blue-400">{{ Math.round(instance.server.cpu?.RawValue || 0) }}%</div>
-										<div class="text-xs text-gray-400">CPU</div>
-									</div>
-									<div>
-										<div class="text-lg font-bold text-green-400">{{ ((instance.server.memory?.RawValue || 0) / 1024).toFixed(1) }}GB</div>
-										<div class="text-xs text-gray-400">Memory</div>
-									</div>
-								</div>
 
-								<!-- Arrow -->
-								<div class="flex-shrink-0 text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all">
-									<ChevronRight class="w-5 h-5" />
-								</div>
-							</NuxtLink>
-						</div>
-					</TransitionGroup>
+									<!-- Arrow -->
+									<div class="flex-shrink-0 text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all">
+										<ChevronRight class="w-5 h-5" />
+									</div>
+								</NuxtLink>
+							</div>
+						</TransitionGroup>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -164,11 +155,10 @@
 </template>
 
 <script setup lang="ts">
-import InstanceCard from './instanceCard.vue';
 import type { Instance } from '~/types/servers/instanceTypes';
 import borderColor from '~/utils/servers/stateColor';
 import { ref, computed, onMounted, watch } from 'vue';
-import { Search, List, Grid3X3, ChevronRight } from 'lucide-vue-next';
+import { Search, ChevronRight } from 'lucide-vue-next';
 
 // Props
 const props = defineProps<{
@@ -181,7 +171,6 @@ const instances = ref<Instance[]>(props.instances || []);
 const searchQuery = ref('');
 const selectedModule = ref('');
 const selectedStatus = ref('');
-const viewMode = ref<'grid' | 'list'>('grid');
 
 // Computed properties
 const filteredInstances = computed(() => {
@@ -208,7 +197,29 @@ const filteredInstances = computed(() => {
 		filtered = filtered.filter((instance) => instance.server.state === selectedStatus.value);
 	}
 
-	return filtered;
+	// Sort by status priority: Running first, then others
+	return filtered.sort((a, b) => {
+		const statusPriority: Record<string, number> = {
+			Running: 0,
+			Starting: 1,
+			Stopping: 2,
+			Stopped: 3,
+			Offline: 4,
+			Suspended: 5,
+		};
+
+		const aPriority = statusPriority[a.server.state] ?? 6;
+		const bPriority = statusPriority[b.server.state] ?? 6;
+
+		if (aPriority !== bPriority) {
+			return aPriority - bPriority;
+		}
+
+		// If same status, sort alphabetically by name
+		const aName = a.friendlyName || a.instanceName;
+		const bName = b.friendlyName || b.instanceName;
+		return aName.localeCompare(bName);
+	});
 });
 
 const uniqueModules = computed(() => {
@@ -226,12 +237,7 @@ const totalPlayers = computed(() => {
 	}, 0);
 });
 
-// Methods
-const toggleView = () => {
-	viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid';
-	// Save preference to localStorage
-	localStorage.setItem('serverViewMode', viewMode.value);
-};
+// Methods - No longer needed since we only have list view
 
 // Watch for prop changes
 watch(
@@ -246,12 +252,6 @@ watch(
 
 // Lifecycle
 onMounted(async () => {
-	// Load view preference from localStorage
-	const savedViewMode = localStorage.getItem('serverViewMode');
-	if (savedViewMode === 'list' || savedViewMode === 'grid') {
-		viewMode.value = savedViewMode;
-	}
-
 	// If no instances prop provided, you can fetch here
 	if (!props.instances) {
 		try {
@@ -279,22 +279,6 @@ onMounted(async () => {
 .container {
 	max-width: 100%;
 	overflow-x: hidden;
-}
-
-/* Fade transition for grid items */
-.fade-enter-active,
-.fade-leave-active {
-	transition: all 0.3s ease;
-}
-
-.fade-enter-from {
-	opacity: 0;
-	transform: translateY(20px) scale(0.95);
-}
-
-.fade-leave-to {
-	opacity: 0;
-	transform: translateY(-20px) scale(0.95);
 }
 
 /* Slide transition for list items */
