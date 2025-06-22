@@ -2,7 +2,7 @@
 	<div class="min-h-fit w-full bg-black/80 pt-20 rounded-2xl border-white/10 border-2 shadow-2xl sm:pt-4">
 		<!-- Header Section -->
 		<header class="w-full backdrop-blur-sm border-b border-white/20 sticky top-0 z-40">
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-4 sm:pt-0">
 				<div class="flex items-center justify-between gap-4">
 					<div>
 						<h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Voxelservers</h1>
@@ -66,7 +66,7 @@
 		</header>
 
 		<!-- Main Content -->
-		<main class="w-full px-4 sm:px-6 py-6 sm:py-8">
+		<main class="w-full px-4 sm:px-6 py-4 sm:py-4">
 			<div class="max-w-7xl mx-auto bg-black/50 border-white/10 border-2 rounded-2xl shadow-2xl p-6 overflow-hidden">
 				<!-- Loading State -->
 				<div v-if="loading" class="flex items-center justify-center py-20">

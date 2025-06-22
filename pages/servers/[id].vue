@@ -6,10 +6,6 @@ import borderColor from '~/utils/servers/stateColor';
 import FullInstance from '~/components/servers/fullInstance.vue';
 import type { NetworkData } from '~/types/servers/networkTypes';
 
-// definePageMeta({
-// 	layout: 'servers-nav-header',
-// });
-
 const route = useRoute();
 const config = useRuntimeConfig();
 const instanceUrl = `${config.public.baseApiURI}/server/data/instances`;
@@ -90,7 +86,6 @@ watch(
 					<div v-else class="page-wrapper flex flex-col justify-center items-center py-6 px-8" style="min-height: calc(100vh - 2.5rem)">
 						<div class="flex flex-wrap gap-8 max-w-screen-xl w-full justify-center">
 							<FullInstance v-if="instance && networkData" :instance="instance" :linkStatus="instance.linkStatus" :network="networkData" />
-							<!-- <InstanceCard v-for="instance in instances" :key="instance.instanceId" :instance="instance" /> -->
 						</div>
 					</div>
 				</div>

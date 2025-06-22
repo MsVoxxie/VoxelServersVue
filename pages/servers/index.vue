@@ -2,12 +2,7 @@
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import type { InstancesResponse } from '../../types/servers/instanceTypes';
 import BoilerCard from '~/components/servers/boilerCard.vue';
-import InstanceCard from '~/components/servers/instanceCard.vue';
 import MultiInstanceRedesign from '~/components/servers/multiInstanceRedesign.vue';
-
-// definePageMeta({
-// 	layout: 'servers-nav-header',
-// });
 
 const config = useRuntimeConfig();
 const baseUrl = `${config.public.baseApiURI}/server/data/instances`;
@@ -80,7 +75,6 @@ watch(
 					<div v-else class="page-wrapper flex flex-col justify-center items-center py-6 px-8" style="min-height: calc(100vh - 2.5rem)">
 						<div class="flex flex-wrap gap-8 max-w-screen-xl w-full justify-center">
 							<MultiInstanceRedesign :instances="instances" />
-							<!-- <InstanceCard v-for="instance in instances" :key="instance.instanceId" :instance="instance" /> -->
 						</div>
 					</div>
 				</div>
