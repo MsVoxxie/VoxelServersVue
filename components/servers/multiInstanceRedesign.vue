@@ -79,11 +79,8 @@
 					<div class="text-6xl text-gray-600 mb-4">😖</div>
 					<h3 class="text-2xl font-bold text-white mb-2">No servers found</h3>
 					<p class="text-gray-400 mb-6">
-						{{ searchQuery || selectedModule || selectedStatus ? 'Try adjusting your filters or search query.' : 'Add a new server to get started!' }}
+						{{ searchQuery || selectedModule || selectedStatus ? 'Try adjusting your filters or search query.' : 'There are no servers available.' }}
 					</p>
-					<button v-if="!searchQuery && !selectedModule && !selectedStatus" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-colors">
-						Add Your First Server
-					</button>
 				</div>
 
 				<!-- List View -->

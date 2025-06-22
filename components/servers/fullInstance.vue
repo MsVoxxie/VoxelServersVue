@@ -178,7 +178,7 @@ import ServerChat from './serverChat.vue';
 
 const { signIn, signOut, data } = useAuth();
 const isAuthenticated = computed(() => !!data.value?.user);
-const nickOrName = computed(() => data.value?.user.member?.nick || data.value?.user.name || 'Unknown');
+const nickOrName = computed(() => data.value?.user.member?.nick || data.value?.user.member?.user.global_name || data.value?.user.name || 'Unknown');
 
 interface CustomUser {
 	name: string;
