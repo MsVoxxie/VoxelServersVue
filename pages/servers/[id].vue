@@ -40,8 +40,8 @@ const instances = computed(() => {
 onMounted(() => {
 	refresh();
 	networkRefresh();
-	instanceIntervalId = setInterval(refresh, 2500);
-	networkIntervalId = setInterval(networkRefresh, 2500);
+	instanceIntervalId = setInterval(refresh, 5 * 1000);
+	networkIntervalId = setInterval(networkRefresh, 5 * 1000);
 });
 
 onUnmounted(() => {

@@ -33,7 +33,7 @@ const instances = computed(() => {
 
 onMounted(() => {
 	refresh();
-	intervalId = setInterval(refresh, 2500);
+	intervalId = setInterval(refresh, 5 * 1000);
 });
 
 onUnmounted(() => {

@@ -116,7 +116,7 @@ onMounted(() => {
 	intervalId = setInterval(() => {
 		values.value.push(props.value);
 		while (values.value.length > barCount.value) values.value.shift();
-	}, 1000);
+	}, 5 * 1000);
 });
 onUnmounted(() => {
 	if (resizeObserver && container.value) resizeObserver.unobserve(container.value);
