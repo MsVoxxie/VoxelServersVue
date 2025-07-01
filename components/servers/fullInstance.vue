@@ -138,23 +138,32 @@
 				</div>
 				<!-- Network Info -->
 				<div class="bg-gray-900/80 rounded-xl p-4 shadow flex flex-col gap-2 divide-y divide-white/20">
-					<h2 class="text-lg font-semibold text-white">Network</h2>
+					<h2 class="text-lg font-semibold text-white">Network Overview</h2>
 					<div class="flex justify-between px-1">
 						<div>
-							<div class="text-gray-400">External Ping:</div>
-							<div class="text-white font-mono text-lg">{{ network.externalPing }} ms</div>
-							<div class="text-gray-400">Average:</div>
-							<div class="text-white">{{ network.externalAvg }} ms</div>
-							<div class="text-gray-400">Median:</div>
-							<div class="text-white">{{ network.externalMedian }} ms</div>
+							<div class="text-gray-400">Your Ping:</div>
+							<div class="flex items-center gap-2">
+								<div class="font-mono text-lg" :class="getPingColor(userPing)">
+									{{ userPing !== null ? `${userPing} ms` : 'Testing...' }}
+								</div>
+								<div v-if="isTestingPing" class="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full"></div>
+							</div>
+							<div class="text-gray-400">Your Average:</div>
+							<div class="font-mono" :class="getPingColor(averagePing)">
+								{{ averagePing !== null ? `${averagePing} ms` : 'N/A' }}
+							</div>
+							<div class="text-gray-400">Your Median:</div>
+							<div class="font-mono" :class="getPingColor(medianPing)">
+								{{ medianPing !== null ? `${medianPing} ms` : 'N/A' }}
+							</div>
 						</div>
 						<div>
-							<div class="text-gray-400">Internal Up:</div>
-							<div class="text-white">{{ network.internalUp }} MB/s</div>
-							<div class="text-gray-400">Internal Down:</div>
-							<div class="text-white">{{ network.internalDown }} MB/s</div>
-							<div class="text-gray-400">Last Spike:</div>
-							<div class="text-white">{{ network.lastSpike }}</div>
+							<div class="text-gray-400">Servers Ping:</div>
+							<div class="font-mono" :class="getPingColor(network.externalPing)">{{ network.externalPing }} ms</div>
+							<div class="text-gray-400">Servers Average:</div>
+							<div class="font-mono" :class="getPingColor(network.externalAvg)">{{ network.externalAvg }} ms</div>
+							<div class="text-gray-400">Servers Median:</div>
+							<div class="font-mono" :class="getPingColor(network.externalMedian)">{{ network.externalMedian }} ms</div>
 						</div>
 					</div>
 				</div>
@@ -165,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { LucideLogOut } from 'lucide-vue-next';
 import { siDiscord } from 'simple-icons';
 import { useAuth } from '#imports';
@@ -207,6 +216,88 @@ const props = defineProps<{
 	network: any;
 	linkStatus: boolean;
 }>();
+
+// Ping measurement functionality
+const userPing = ref<number | null>(null);
+const pingHistory = ref<number[]>([]);
+const averagePing = ref<number | null>(null);
+const medianPing = ref<number | null>(null);
+const isTestingPing = ref(false);
+let pingInterval: NodeJS.Timeout | null = null;
+
+// Function to test user's ping to the server
+async function testUserPing(): Promise<number | null> {
+	try {
+		isTestingPing.value = true;
+		const startTime = performance.now();
+
+		// Use a dedicated ping endpoint for more reliable results
+		await fetch('/api/ping', {
+			method: 'GET',
+			cache: 'no-cache',
+		});
+
+		const endTime = performance.now();
+		return Math.round(endTime - startTime);
+	} catch (error) {
+		console.warn('Ping test failed:', error);
+		return null;
+	} finally {
+		isTestingPing.value = false;
+	}
+}
+
+// Update ping statistics
+function updatePingStats(newPing: number) {
+	userPing.value = newPing;
+
+	// Keep last 10 ping measurements for average/median
+	pingHistory.value.push(newPing);
+	if (pingHistory.value.length > 10) {
+		pingHistory.value.shift();
+	}
+
+	// Calculate average
+	averagePing.value = Math.round(pingHistory.value.reduce((sum, ping) => sum + ping, 0) / pingHistory.value.length);
+
+	// Calculate median
+	const sortedPings = [...pingHistory.value].sort((a, b) => a - b);
+	const mid = Math.floor(sortedPings.length / 2);
+	medianPing.value = sortedPings.length % 2 === 0 ? Math.round((sortedPings[mid - 1] + sortedPings[mid]) / 2) : sortedPings[mid];
+}
+
+// Get ping color based on value
+const getPingColor = (ping: number | null) => {
+	if (ping === null) return 'text-gray-400';
+	if (ping < 50) return 'text-green-400';
+	if (ping < 100) return 'text-yellow-400';
+	if (ping < 200) return 'text-orange-400';
+	return 'text-red-400';
+};
+
+// Start ping testing when component mounts
+onMounted(async () => {
+	// Initial ping test
+	const initialPing = await testUserPing();
+	if (initialPing !== null) {
+		updatePingStats(initialPing);
+	}
+
+	// Set up interval for continuous ping testing (every 5 seconds)
+	pingInterval = setInterval(async () => {
+		const ping = await testUserPing();
+		if (ping !== null) {
+			updatePingStats(ping);
+		}
+	}, 5 * 1000);
+});
+
+// Clean up interval when component unmounts
+onUnmounted(() => {
+	if (pingInterval) {
+		clearInterval(pingInterval);
+	}
+});
 
 const maxPlayers = computed(() => props.instance.server.users?.MaxValue || 0);
 const players = computed(() => props.instance.players || []);
