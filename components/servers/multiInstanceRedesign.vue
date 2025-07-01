@@ -1,47 +1,47 @@
 <template>
-	<div class="min-h-fit w-full bg-black/80 pt-20 rounded-2xl border-white/10 border-2 shadow-2xl sm:pt-4">
+	<div class="min-h-fit w-full bg-black/80 pt-12 md:pt-4 rounded-2xl border-white/10 border-2 shadow-2xl">
 		<!-- Header Section -->
 		<header class="w-full backdrop-blur-sm border-b border-white/20 sticky top-0 z-40">
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-4 sm:pt-0">
-				<div class="flex items-center justify-between gap-4">
-					<div>
-						<h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Voxelservers</h1>
-						<span class="text-gray-400">Still a W.I.P 🙂</span>
+			<div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 md:py-4 lg:pt-0">
+				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+					<div class="flex-shrink-0">
+						<h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2">Voxelservers</h1>
+						<span class="text-gray-400 text-sm">Still a W.I.P 🙂</span>
 					</div>
 
 					<!-- Quick Stats -->
-					<div class="flex gap-2 sm:gap-4 text-center">
-						<div class="bg-gray-900/80 rounded-xl px-2 sm:px-4 py-2 sm:py-3 border border-white/20">
-							<div class="text-sm sm:text-xl font-bold text-green-400">{{ runningServers }}</div>
+					<div class="flex gap-1 sm:gap-2 md:gap-4 text-center">
+						<div class="bg-gray-900/80 rounded-lg sm:rounded-xl px-1.5 sm:px-2 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-3 border border-white/20 min-w-0 flex-1 sm:flex-none">
+							<div class="text-xs sm:text-sm md:text-lg lg:text-xl font-bold text-green-400">{{ runningServers }}</div>
 							<div class="text-xs text-gray-400">Running</div>
 						</div>
-						<div class="bg-gray-900/80 rounded-xl px-2 sm:px-4 py-2 sm:py-3 border border-white/20">
-							<div class="text-sm sm:text-xl font-bold text-blue-400">{{ totalPlayers }}</div>
+						<div class="bg-gray-900/80 rounded-lg sm:rounded-xl px-1.5 sm:px-2 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-3 border border-white/20 min-w-0 flex-1 sm:flex-none">
+							<div class="text-xs sm:text-sm md:text-lg lg:text-xl font-bold text-blue-400">{{ totalPlayers }}</div>
 							<div class="text-xs text-gray-400">Players</div>
 						</div>
-						<div class="bg-gray-900/80 rounded-xl px-2 sm:px-4 py-2 sm:py-3 border border-white/20">
-							<div class="text-sm sm:text-xl font-bold text-white">{{ filteredInstances.length }}</div>
+						<div class="bg-gray-900/80 rounded-lg sm:rounded-xl px-1.5 sm:px-2 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-3 border border-white/20 min-w-0 flex-1 sm:flex-none">
+							<div class="text-xs sm:text-sm md:text-lg lg:text-xl font-bold text-white">{{ filteredInstances.length }}</div>
 							<div class="text-xs text-gray-400">Total</div>
 						</div>
 					</div>
 				</div>
 
 				<!-- Filter and Search Bar -->
-				<div class="mt-4 sm:mt-6 flex gap-3 sm:gap-4">
+				<div class="mt-3 sm:mt-4 lg:mt-6 flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4">
 					<div class="flex-1 relative">
 						<input
 							v-model="searchQuery"
 							type="text"
 							placeholder="Search servers..."
-							class="w-full bg-gray-900/80 border border-white/20 rounded-xl px-4 py-3 pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+							class="w-full bg-gray-900/80 border border-white/20 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-sm sm:text-base"
 						/>
-						<Search class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+						<Search class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
 					</div>
 
-					<div class="flex gap-2">
+					<div class="flex gap-2 sm:gap-3">
 						<select
 							v-model="selectedModule"
-							class="bg-gray-900/80 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors min-w-0"
+							class="bg-gray-900/80 border border-white/20 rounded-lg sm:rounded-xl px-2 sm:px-3 py-2 sm:py-3 text-white focus:outline-none focus:border-blue-500 transition-colors min-w-0 text-sm sm:text-base"
 						>
 							<option value="">All Games</option>
 							<option v-for="module in uniqueModules" :key="module" :value="module">
@@ -51,7 +51,7 @@
 
 						<select
 							v-model="selectedStatus"
-							class="bg-gray-900/80 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors min-w-0"
+							class="bg-gray-900/80 border border-white/20 rounded-lg sm:rounded-xl px-2 sm:px-3 py-2 sm:py-3 text-white focus:outline-none focus:border-blue-500 transition-colors min-w-0 text-sm sm:text-base"
 						>
 							<option value="">All Status</option>
 							<option value="Running">Running</option>
@@ -66,80 +66,89 @@
 		</header>
 
 		<!-- Main Content -->
-		<main class="w-full px-4 sm:px-6 py-4 sm:py-4">
-			<div class="max-w-7xl mx-auto bg-black/50 border-white/10 border-2 rounded-2xl shadow-2xl p-6 overflow-hidden">
+		<main class="w-full px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+			<div class="max-w-7xl mx-auto bg-black/50 border-white/10 border-2 rounded-xl sm:rounded-2xl shadow-2xl p-3 sm:p-4 md:p-6 overflow-hidden">
 				<!-- Loading State -->
-				<div v-if="loading" class="flex items-center justify-center py-20">
-					<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-					<span class="ml-3 text-white">Loading servers...</span>
+				<div v-if="loading" class="flex items-center justify-center py-12 sm:py-20">
+					<div class="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500"></div>
+					<span class="ml-3 text-white text-sm sm:text-base">Loading servers...</span>
 				</div>
 
 				<!-- Empty State -->
-				<div v-else-if="filteredInstances.length === 0 && !loading" class="text-center py-20">
-					<div class="text-6xl text-gray-600 mb-4">😖</div>
-					<h3 class="text-2xl font-bold text-white mb-2">No servers found</h3>
-					<p class="text-gray-400 mb-6">
+				<div v-else-if="filteredInstances.length === 0 && !loading" class="text-center py-12 sm:py-20">
+					<div class="text-4xl sm:text-6xl text-gray-600 mb-4">😖</div>
+					<h3 class="text-xl sm:text-2xl font-bold text-white mb-2">No servers found</h3>
+					<p class="text-gray-400 mb-6 text-sm sm:text-base px-4">
 						{{ searchQuery || selectedModule || selectedStatus ? 'Try adjusting your filters or search query.' : 'There are no servers available.' }}
 					</p>
 				</div>
 
 				<!-- List View -->
-				<div v-else class="max-h-96 overflow-y-auto">
-					<div class="space-y-4">
-						<TransitionGroup name="slide" tag="div" class="space-y-4">
+				<div v-else class="max-h-[50vh] sm:max-h-[60vh] lg:max-h-[70vh] overflow-y-auto">
+					<div class="space-y-3 sm:space-y-4">
+						<TransitionGroup name="slide" tag="div" class="space-y-3 sm:space-y-4">
 							<div
 								v-for="instance in filteredInstances"
 								:key="instance.instanceId"
-								class="bg-black/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-white/30 transition-all duration-200 shadow-2xl"
+								class="bg-black/80 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:border-white/30 transition-all duration-200 shadow-2xl"
 							>
-								<NuxtLink :to="`/servers/${instance.instanceId}`" class="flex items-center gap-6 group">
+								<NuxtLink :to="`/servers/${instance.instanceId}`" class="flex items-center gap-3 sm:gap-4 md:gap-6 group">
 									<!-- Server Icon -->
 									<div class="flex-shrink-0">
 										<img
 											:src="instance.icon"
 											:alt="instance.friendlyName || instance.instanceName"
-											class="w-45 rounded-lg object-cover border-2 border-white/20 bg-gray-900"
+											class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-lg object-cover border-2 border-white/20 bg-gray-900"
 										/>
 									</div>
 
 									<!-- Server Info -->
 									<div class="flex-grow min-w-0">
-										<div class="flex items-center gap-3 mb-2">
-											<h3 class="text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">
+										<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-1 sm:mb-2">
+											<h3 class="text-base sm:text-lg md:text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">
 												{{ instance.friendlyName || instance.instanceName }}
 											</h3>
-											<span class="px-3 py-1 rounded-full text-xs font-semibold" :class="borderColor(instance.server.state).bg">
+											<span class="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold self-start sm:self-auto" :class="borderColor(instance.server.state).bg">
 												{{ instance.server.state }}
 											</span>
 										</div>
-										<div class="text-gray-300 text-sm mb-2">
+										<div class="text-gray-300 text-xs sm:text-sm mb-1 sm:mb-2">
 											{{ instance.moduleName || instance.module }}
 											<span v-if="instance.pack_version" class="text-gray-400"> | Modpack {{ instance.pack_version }} </span>
 										</div>
-										<p class="text-gray-400 text-sm truncate">
+										<p class="text-gray-400 text-xs sm:text-sm truncate">
 											{{ instance.description || 'No description available' }}
 										</p>
+										<!-- Mobile Stats -->
+										<div class="flex gap-3 mt-2 md:hidden text-xs">
+											<span class="text-white">
+												<span class="text-gray-400">Players:</span> {{ instance.server.users?.RawValue || 0 }}/{{ instance.server.users?.MaxValue || 0 }}
+											</span>
+											<span class="text-blue-400">
+												<span class="text-gray-400">CPU:</span> {{ Math.round(instance.server.cpu?.RawValue || 0) }}%
+											</span>
+										</div>
 									</div>
 
 									<!-- Server Stats -->
-									<div class="hidden md:flex items-center gap-6 text-center">
+									<div class="hidden md:flex items-center gap-4 xl:gap-6 text-center">
 										<div>
-											<div class="text-lg font-bold text-white">{{ instance.server.users?.RawValue || 0 }}/{{ instance.server.users?.MaxValue || 0 }}</div>
+											<div class="text-sm md:text-base lg:text-lg font-bold text-white">{{ instance.server.users?.RawValue || 0 }}/{{ instance.server.users?.MaxValue || 0 }}</div>
 											<div class="text-xs text-gray-400">Players</div>
 										</div>
 										<div>
-											<div class="text-lg font-bold text-blue-400">{{ Math.round(instance.server.cpu?.RawValue || 0) }}%</div>
+											<div class="text-sm md:text-base lg:text-lg font-bold text-blue-400">{{ Math.round(instance.server.cpu?.RawValue || 0) }}%</div>
 											<div class="text-xs text-gray-400">CPU</div>
 										</div>
 										<div>
-											<div class="text-lg font-bold text-green-400">{{ ((instance.server.memory?.RawValue || 0) / 1024).toFixed(1) }}GB</div>
+											<div class="text-sm md:text-base lg:text-lg font-bold text-green-400">{{ ((instance.server.memory?.RawValue || 0) / 1024).toFixed(1) }}GB</div>
 											<div class="text-xs text-gray-400">Memory</div>
 										</div>
 									</div>
 
 									<!-- Arrow -->
 									<div class="flex-shrink-0 text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all">
-										<ChevronRight class="w-5 h-5" />
+										<ChevronRight class="w-4 h-4 sm:w-5 sm:h-5" />
 									</div>
 								</NuxtLink>
 							</div>
@@ -408,17 +417,21 @@ header {
 
 /* Prevent layout shift on mobile */
 @media (max-width: 575px) {
-	.pt-20 {
+	.pt-12 {
+		padding-top: 0.75rem;
+	}
+}
+
+@media (max-width: 767px) {
+	.pt-12 {
 		padding-top: 1rem;
 	}
 }
 
 /* Ensure proper spacing for nav header without excessive gap */
-@media (min-width: 640px) {
-	.pt-20 {
+@media (min-width: 768px) {
+	.md\\:pt-4 {
 		padding-top: 1rem;
 	}
-
-	/* No extra padding needed - let the container handle centering */
 }
 </style>
