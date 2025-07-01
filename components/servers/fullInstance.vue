@@ -173,7 +173,6 @@
 								<div class="font-mono text-base md:text-lg" :class="getPingColor(userPing)">
 									{{ userPing !== null ? `${userPing} ms` : 'Testing...' }}
 								</div>
-								<div v-if="isTestingPing" class="animate-spin w-3 h-3 md:w-4 md:h-4 border-2 border-blue-400 border-t-transparent rounded-full"></div>
 							</div>
 							<div class="text-gray-400 text-sm">Your Average:</div>
 							<div class="font-mono text-sm md:text-base" :class="getPingColor(averagePing)">
