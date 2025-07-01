@@ -185,6 +185,8 @@ import BarGraph from './barGraph.vue';
 import playerHead from './basicPlayer.vue';
 import ServerChat from './serverChat.vue';
 
+const config = useRuntimeConfig();
+
 const { signIn, signOut, data } = useAuth();
 const isAuthenticated = computed(() => !!data.value?.user);
 const nickOrName = computed(() => data.value?.user.member?.nick || data.value?.user.member?.user.global_name || data.value?.user.name || 'Unknown');
@@ -232,7 +234,7 @@ async function testUserPing(): Promise<number | null> {
 		const startTime = performance.now();
 
 		// Use a dedicated ping endpoint for more reliable results
-		await fetch('/api/ping', {
+		await fetch(`${config.public.baseApiURI}/server/ping`, {
 			method: 'GET',
 			cache: 'no-cache',
 		});
