@@ -66,12 +66,15 @@
 				<div class="relative">
 					<img :src="instance.icon" class="h-16 md:h-20 lg:h-25 rounded-xl shadow-lg border-2 border-white/20 bg-gray-900 object-cover" />
 					<!-- Status Bar with Text -->
-					<div class="absolute bottom-0 left-0 right-0 h-5 md:h-6 rounded-b-lg flex items-center justify-center text-xs md:text-sm font-semibold text-white shadow-lg" :class="{
-						'bg-green-500/90': instance.server.state === 'Running',
-						'bg-yellow-500/90': instance.server.state === 'Starting',
-						'bg-red-500/90': instance.server.state === 'Stopped' || instance.server.state === 'Offline',
-						'bg-gray-500/90': !['Running', 'Starting', 'Stopped', 'Offline'].includes(instance.server.state)
-					}">
+					<div
+						class="absolute bottom-0 left-0 right-0 h-5 md:h-6 rounded-b-lg flex items-center justify-center text-xs md:text-sm font-semibold text-white shadow-lg"
+						:class="{
+							'bg-green-500/90': instance.server.state === 'Running',
+							'bg-yellow-500/90': instance.server.state === 'Starting',
+							'bg-red-500/90': instance.server.state === 'Stopped' || instance.server.state === 'Offline',
+							'bg-gray-500/90': !['Running', 'Starting', 'Stopped', 'Offline'].includes(instance.server.state),
+						}"
+					>
 						{{ instance.server.state }}
 					</div>
 				</div>
@@ -202,7 +205,13 @@
 					</div>
 				</div>
 			</section>
-			<ServerChat :instanceId="instanceId" :linkStatus="linkStatus" :isAuthenticated="isAuthenticated" :nickOrName="nickOrName" />
+			<ServerChat
+				:instanceId="instanceId"
+				:linkStatus="linkStatus"
+				:isAuthenticated="isAuthenticated"
+				:nickOrName="nickOrName"
+				:serverGame="instance.moduleName || instance.module"
+			/>
 		</main>
 	</section>
 </template>

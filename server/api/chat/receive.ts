@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3';
 import { useRuntimeConfig } from '#imports';
-import { broadcastToInstance } from '../../ws';
+import { $fetch } from 'ofetch';
 
 export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig();
@@ -18,7 +18,24 @@ export default defineEventHandler(async (event) => {
 		return { error: 'No message or instance provided' };
 	}
 
-	// Broadcast to all websocket clients for this instance
-	broadcastToInstance(instance, { user, message, instance, from: 'game' });
-	return { broadcast: true };
+	// Broadcast to all websocket clients for this instance via HTTP request
+	// This avoids importing the WebSocket module directly
+	try {
+		const wsPort = process.env.WS_PORT || 2002;
+		await $fetch(`http://localhost:${wsPort}/broadcast`, {
+			method: 'POST',
+			body: JSON.stringify({
+				instance,
+				message: { user, message, instance, from: 'game' }
+			}),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		});
+		return { broadcast: true };
+	} catch (error) {
+		console.error('Failed to broadcast to WebSocket clients:', error);
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+		return { error: 'Failed to broadcast message', details: errorMessage };
+	}
 });

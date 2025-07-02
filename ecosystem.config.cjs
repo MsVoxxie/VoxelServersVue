@@ -8,11 +8,15 @@ module.exports = {
 		},
 		{
 			name: 'VoxelVue WebSocket',
-			script: './server/ws.js',
+			script: './server/ws-runner.js',
 			instances: 1,
 			watch: false,
 			wait_ready: true,
 			autorestart: true,
+			env_file: '.env',
+			env: {
+				NODE_ENV: 'production'
+			}
 		},
 	],
 };

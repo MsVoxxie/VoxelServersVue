@@ -7,9 +7,9 @@
 					<span class="font-bold text-primary-400">{{ msg.user }}:</span> {{ msg.text }}
 				</div>
 				<!-- Overlay for unauthenticated users or if linkStatus is false, only over chat area -->
-				<div v-if="!isAuthenticated || !linkStatus" class="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-xs rounded z-10">
+				<div v-if="!isAuthenticatedForced || !linkStatus" class="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-xs rounded z-10">
 					<span class="text-white text-lg font-bold">
-						{{ !isAuthenticated ? 'Authentication Required' : 'Server Unlinked' }}
+						{{ !isAuthenticatedForced ? 'Authentication Required' : 'Server Unlinked' }}
 					</span>
 				</div>
 			</div>
@@ -19,13 +19,13 @@
 				v-model="chatInput"
 				@keyup.enter="sendMessage"
 				type="text"
-				:disabled="!isAuthenticated || !linkStatus"
+				:disabled="!isAuthenticatedForced || !linkStatus"
 				placeholder="Type a message..."
 				class="flex-1 bg-gray-800 text-white rounded px-3 py-2 outline-none"
 			/>
 			<button
 				@click="sendMessage"
-				:disabled="!isAuthenticated || !linkStatus"
+				:disabled="!isAuthenticatedForced || !linkStatus"
 				class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded font-bold disabled:opacity-50"
 			>
 				Send
@@ -36,13 +36,13 @@
 
 <script setup lang="ts">
 import { ref, nextTick, watch, onMounted, onBeforeUnmount, computed } from 'vue';
-import { sendChatMessage } from '~/utils/servers/chatCalls';
 
 const props = defineProps<{
 	instanceId: string;
 	linkStatus: boolean;
 	isAuthenticated: boolean;
 	nickOrName: string;
+	serverGame?: string;
 }>();
 
 interface ChatMessage {
@@ -55,16 +55,53 @@ const messages = ref<ChatMessage[]>([]);
 const chatInput = ref('');
 const chatBox = ref<HTMLElement | null>(null);
 
+// Use actual authentication status
+const isAuthenticatedForced = computed(() => {
+	return props.isAuthenticated;
+});
+
+// Use actual user name from props
+const tempSenderName = computed(() => {
+	return props.nickOrName || 'Unknown';
+});
+
 async function sendMessage() {
 	if (chatInput.value.trim()) {
-		messages.value.push({ id: Date.now(), user: props.nickOrName || 'Unknown', text: chatInput.value });
+		const messageText = chatInput.value.trim();
+		const senderName = tempSenderName.value;
+
+		// Clear input immediately for better UX
+		chatInput.value = '';
+
 		try {
-			await sendChatMessage(props.nickOrName || 'You', props.instanceId, chatInput.value);
+			// Send message directly through WebSocket instead of REST API
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				const message = {
+					type: 'chat',
+					instanceId: props.instanceId,
+					user: senderName,
+					message: messageText,
+					timestamp: new Date().toISOString(),
+					source: 'web',
+					moduleName: props.serverGame || 'web',
+					module: props.serverGame || 'web',
+				};
+
+				ws.send(JSON.stringify(message));
+			} else {
+				throw new Error('WebSocket connection is not open');
+			}
 		} catch (error) {
 			console.error('Failed to send chat message:', error);
+			// Add an error message if sending failed
+			messages.value.push({
+				id: Date.now(),
+				user: 'System',
+				text: 'Failed to send message. Please try again.',
+			});
+			// Restore the message in input for retry
+			chatInput.value = messageText;
 		}
-		chatInput.value = '';
-		scrollChatToBottom();
 	}
 }
 
@@ -81,6 +118,7 @@ watch(messages, scrollChatToBottom, { deep: true });
 // WebSocket client for real-time chat
 let ws: WebSocket | null = null;
 let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 10;
 
@@ -95,55 +133,101 @@ function getWebSocketUrl(instanceId: string) {
 
 function connectWebSocket() {
 	ws = new WebSocket(getWebSocketUrl(props.instanceId));
+
 	ws.onopen = () => {
-		console.log('[WS CLIENT] Connected');
 		reconnectAttempts = 0;
+
+		// Start heartbeat to keep connection alive
+		heartbeatInterval = setInterval(() => {
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				ws.send(JSON.stringify({ type: 'ping', instanceId: props.instanceId }));
+			}
+		}, 30000);
 	};
+
 	ws.onmessage = (event) => {
-		const msg = JSON.parse(event.data);
-		messages.value.push({
-			id: Date.now(),
-			user: msg.user,
-			text: msg.message,
-		});
-		scrollChatToBottom();
+		try {
+			const msg = JSON.parse(event.data);
+
+			// Skip system messages from appearing in chat
+			if (msg.type === 'ping' || msg.type === 'connection_test' || msg.type === 'client_connect') {
+				return;
+			}
+
+			// Handle chat messages specifically
+			if (msg.type === 'chat') {
+				const newMessage = {
+					id: Date.now() + Math.random(),
+					user: msg.user || msg.username || msg.sender || msg.from || msg.player || 'Unknown',
+					text: msg.message || msg.text || msg.content || msg.msg || String(msg.message || msg),
+				};
+
+				messages.value.push(newMessage);
+				scrollChatToBottom();
+				return;
+			}
+
+			// Handle other message formats that might come from the server (legacy support)
+			const newMessage = {
+				id: Date.now() + Math.random(),
+				user: msg.user || msg.username || msg.sender || msg.from || msg.player || 'Unknown',
+				text: msg.message || msg.text || msg.content || msg.msg || String(msg),
+			};
+
+			messages.value.push(newMessage);
+			scrollChatToBottom();
+		} catch (error) {
+			// If it's not JSON, treat it as plain text
+			const plainTextMessage = {
+				id: Date.now() + Math.random(),
+				user: 'Server',
+				text: event.data,
+			};
+
+			messages.value.push(plainTextMessage);
+			scrollChatToBottom();
+		}
 	};
-	ws.onclose = () => {
-		console.log('[WS CLIENT] Disconnected');
+
+	ws.onclose = (event) => {
+		// Clear heartbeat interval
+		if (heartbeatInterval) {
+			clearInterval(heartbeatInterval);
+			heartbeatInterval = null;
+		}
+
 		attemptReconnect();
 	};
+
 	ws.onerror = (err) => {
-		console.error('[WS CLIENT] Error:', err);
+		console.error('WebSocket error occurred:', err);
 		ws?.close();
 	};
 }
 
 function attemptReconnect() {
-	if (props.isAuthenticated && props.linkStatus && reconnectAttempts < maxReconnectAttempts) {
+	if (isAuthenticatedForced.value && props.linkStatus && reconnectAttempts < maxReconnectAttempts) {
 		const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
 		reconnectTimeout = setTimeout(() => {
 			reconnectAttempts++;
-			console.log(`[WS CLIENT] Reconnecting... [${reconnectAttempts}/${maxReconnectAttempts}]`);
 			connectWebSocket();
 		}, delay);
-	} else {
-		console.error('[WS CLIENT] Max reconnect attempts reached or not eligible.');
 	}
 }
 
 onMounted(() => {
-	if (props.isAuthenticated && props.linkStatus) {
+	if (isAuthenticatedForced.value && props.linkStatus) {
 		messages.value.push({ id: 1, user: 'SERVER', text: 'Ready' });
 		connectWebSocket();
 	} else if (!props.linkStatus) {
 		messages.value.push({ id: 0, user: 'SERVER', text: 'Disconnected' });
-	} else if (!props.isAuthenticated) {
+	} else if (!isAuthenticatedForced.value) {
 		messages.value.push({ id: 0, user: 'SERVER', text: 'Authentication Required' });
 	}
 });
 
 watch(
-	() => [props.isAuthenticated, props.linkStatus],
+	() => [isAuthenticatedForced.value, props.linkStatus],
 	([authed, linked], [oldAuthed, oldLinked]) => {
 		if (authed && linked && (!oldAuthed || !oldLinked)) {
 			// If just became eligible, connect
@@ -159,6 +243,7 @@ watch(
 onBeforeUnmount(() => {
 	if (ws) ws.close();
 	if (reconnectTimeout) clearTimeout(reconnectTimeout);
+	if (heartbeatInterval) clearInterval(heartbeatInterval);
 });
 </script>
 
