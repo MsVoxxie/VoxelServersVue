@@ -63,13 +63,21 @@
 
 			<!-- Header: Game Icon, Name, Status -->
 			<div class="flex items-center gap-3 md:gap-6 mb-2 pr-12 md:pr-20">
-				<img :src="instance.icon" class="h-16 md:h-20 lg:h-25 rounded-xl shadow-lg border-2 border-white/20 bg-gray-900 object-cover" />
+				<div class="relative">
+					<img :src="instance.icon" class="h-16 md:h-20 lg:h-25 rounded-xl shadow-lg border-2 border-white/20 bg-gray-900 object-cover" />
+					<!-- Status Bar with Text -->
+					<div class="absolute bottom-0 left-0 right-0 h-5 md:h-6 rounded-b-lg flex items-center justify-center text-xs md:text-sm font-semibold text-white shadow-lg" :class="{
+						'bg-green-500/90': instance.server.state === 'Running',
+						'bg-yellow-500/90': instance.server.state === 'Starting',
+						'bg-red-500/90': instance.server.state === 'Stopped' || instance.server.state === 'Offline',
+						'bg-gray-500/90': !['Running', 'Starting', 'Stopped', 'Offline'].includes(instance.server.state)
+					}">
+						{{ instance.server.state }}
+					</div>
+				</div>
 				<div class="flex-1 min-w-0">
-					<h1 class="text-xl md:text-3xl lg:text-4xl font-bold text-white flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-						<span class="truncate">{{ instance.friendlyName || instance.instanceName }}</span>
-						<span class="text-xs md:text-base px-2 md:px-3 py-1 rounded-full font-semibold self-start sm:ml-2" :class="borderColor(instance.server.state).bg">
-							{{ instance.server.state }}
-						</span>
+					<h1 class="text-xl md:text-3xl lg:text-4xl font-bold text-white">
+						<span class="truncate block">{{ instance.friendlyName || instance.instanceName }}</span>
 					</h1>
 					<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
 						<span class="text-gray-300 text-sm md:text-lg">{{ instance.moduleName || instance.module }}</span>
@@ -166,7 +174,7 @@
 				<!-- Network Info -->
 				<div class="bg-gray-900/80 rounded-xl p-3 md:p-4 shadow flex flex-col gap-2 divide-y divide-white/20">
 					<h2 class="text-base md:text-lg font-semibold text-white">Network Overview</h2>
-					<div class="flex flex-col sm:flex-row sm:justify-between gap-4 sm:gap-1 px-1">
+					<div class="flex justify-between gap-2 px-1">
 						<div class="flex-1">
 							<div class="text-gray-400 text-sm">Your Ping:</div>
 							<div class="flex items-center gap-2">

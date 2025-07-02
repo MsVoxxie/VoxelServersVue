@@ -4,9 +4,12 @@
 		<header class="w-full backdrop-blur-sm border-b border-white/20 sticky top-0 z-40">
 			<div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 md:py-4 lg:pt-0">
 				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-					<div class="flex-shrink-0">
-						<h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2">Voxelservers</h1>
-						<span class="text-gray-400 text-sm">Still a W.I.P 🙂</span>
+					<div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+						<img src="/img/VS_Fox.png" alt="VoxelServers Logo" class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain" />
+						<div>
+							<h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2">Voxelservers</h1>
+							<span class="text-gray-400 text-sm">Still a W.I.P 🙂</span>
+						</div>
 					</div>
 
 					<!-- Quick Stats -->
@@ -98,7 +101,7 @@
 										<img
 											:src="instance.icon"
 											:alt="instance.friendlyName || instance.instanceName"
-											class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-lg object-cover border-2 border-white/20 bg-gray-900"
+											class="h-12 sm:h-16 md:h-20 lg:h-24 rounded-lg object-cover border-2 border-white/20 bg-gray-900"
 										/>
 									</div>
 
