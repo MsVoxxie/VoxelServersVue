@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
-import type { InstancesResponse } from '../../types/servers/instanceTypes';
+import { ref, watch, onMounted, onUnmounted, computed, toRaw } from 'vue';
+import type { ExtendedInstance } from '../../types/servers/instanceTypes';
 import BoilerCard from '~/components/servers/boilerCard.vue';
 import MultiInstanceRedesign from '~/components/servers/multiInstanceRedesign.vue';
 
 const config = useRuntimeConfig();
-const baseUrl = `${config.public.baseApiURI}/server/data/instances`;
+const baseUrl = `${config.public.newApiURI}/data/instances?filter=running_and_not_hidden`;
 const isLoading = ref(true);
 
-const { data, pending, refresh } = useAsyncData<InstancesResponse>('instances', () => $fetch(`${baseUrl}`));
+const { data, pending, refresh } = useAsyncData<ExtendedInstance[]>('instances', async () => await $fetch(`${baseUrl}`));
 
 watch(
 	() => pending.value,
@@ -27,9 +27,11 @@ watch(
 let intervalId: ReturnType<typeof setInterval> | undefined;
 
 const instances = computed(() => {
-	const arr = data.value?.instances ?? [];
-	return arr.filter((instance) => !instance.suspended);
+	const rawData = toRaw(data.value) as ExtendedInstance[] | undefined;
+	return rawData?.filter((instance) => !instance.Suspended) ?? [];
 });
+
+console.log(instances.value);
 
 onMounted(() => {
 	refresh();

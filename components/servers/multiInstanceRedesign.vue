@@ -92,15 +92,16 @@
 						<TransitionGroup name="slide" tag="div" class="space-y-3 sm:space-y-4">
 							<div
 								v-for="instance in filteredInstances"
-								:key="instance.instanceId"
+								:key="instance.InstanceID"
 								class="bg-black/80 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:border-white/30 transition-all duration-200 shadow-2xl"
 							>
-								<NuxtLink :to="`/servers/${instance.instanceId}`" class="flex items-center gap-3 sm:gap-4 md:gap-6 group">
+								<NuxtLink :to="`/servers/${instance.InstanceID}`" class="flex items-center gap-3 sm:gap-4 md:gap-6 group">
 									<!-- Server Icon -->
+									<!-- Fix src later, its the server icon -->
 									<div class="flex-shrink-0">
 										<img
-											:src="instance.icon"
-											:alt="instance.friendlyName || instance.instanceName"
+											:src="instance.ServerIcon"
+											:alt="instance.FriendlyName || instance.InstanceName"
 											class="h-12 sm:h-16 md:h-20 lg:h-24 rounded-lg object-cover border-2 border-white/20 bg-gray-900"
 										/>
 									</div>
@@ -109,42 +110,42 @@
 									<div class="flex-grow min-w-0">
 										<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-1 sm:mb-2">
 											<h3 class="text-base sm:text-lg md:text-xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">
-												{{ instance.friendlyName || instance.instanceName }}
+												{{ instance.FriendlyName || instance.InstanceName }}
 											</h3>
-											<span class="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold self-start sm:self-auto" :class="borderColor(instance.server.state).bg">
-												{{ instance.server.state }}
+											<span class="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold self-start sm:self-auto" :class="borderColor(instance.AppState).bg">
+												{{ instance.AppState }}
 											</span>
 										</div>
 										<div class="text-gray-300 text-xs sm:text-sm mb-1 sm:mb-2">
-											{{ instance.moduleName || instance.module }}
-											<span v-if="instance.pack_version" class="text-gray-400"> | Modpack {{ instance.pack_version }} </span>
+											{{ instance.ModuleDisplayName || instance.Module }}
+											<!-- <span v-if="instance.PackVersion" class="text-gray-400"> | Modpack {{ instance.PackVersion }} </span> -->
 										</div>
 										<p class="text-gray-400 text-xs sm:text-sm truncate">
-											{{ instance.description || 'No description available' }}
+											{{ instance.Description || 'No description available' }}
 										</p>
 										<!-- Mobile Stats -->
 										<div class="flex gap-3 mt-2 md:hidden text-xs">
 											<span class="text-white">
-												<span class="text-gray-400">Players:</span> {{ instance.server.users?.RawValue || 0 }}/{{ instance.server.users?.MaxValue || 0 }}
+												<span class="text-gray-400">Players:</span> {{ instance.Metrics['Active Users']?.RawValue || 0 }}/{{ instance.Metrics['Active Users']?.MaxValue || 0 }}
 											</span>
-											<span class="text-blue-400">
-												<span class="text-gray-400">CPU:</span> {{ Math.round(instance.server.cpu?.RawValue || 0) }}%
-											</span>
+											<span class="text-blue-400"> <span class="text-gray-400">CPU:</span> {{ Math.round(instance.Metrics['CPU Usage']?.RawValue || 0) }}% </span>
 										</div>
 									</div>
 
 									<!-- Server Stats -->
 									<div class="hidden md:flex items-center gap-4 xl:gap-6 text-center">
 										<div>
-											<div class="text-sm md:text-base lg:text-lg font-bold text-white">{{ instance.server.users?.RawValue || 0 }}/{{ instance.server.users?.MaxValue || 0 }}</div>
+											<div class="text-sm md:text-base lg:text-lg font-bold text-white">
+												{{ instance.Metrics['Active Users']?.RawValue || 0 }}/{{ instance.Metrics['Active Users']?.MaxValue || 0 }}
+											</div>
 											<div class="text-xs text-gray-400">Players</div>
 										</div>
 										<div>
-											<div class="text-sm md:text-base lg:text-lg font-bold text-blue-400">{{ Math.round(instance.server.cpu?.RawValue || 0) }}%</div>
+											<div class="text-sm md:text-base lg:text-lg font-bold text-blue-400">{{ Math.round(instance.Metrics['CPU Usage']?.RawValue || 0) }}%</div>
 											<div class="text-xs text-gray-400">CPU</div>
 										</div>
 										<div>
-											<div class="text-sm md:text-base lg:text-lg font-bold text-green-400">{{ ((instance.server.memory?.RawValue || 0) / 1024).toFixed(1) }}GB</div>
+											<div class="text-sm md:text-base lg:text-lg font-bold text-green-400">{{ ((instance.Metrics['Memory Usage']?.RawValue || 0) / 1024).toFixed(1) }}GB</div>
 											<div class="text-xs text-gray-400">Memory</div>
 										</div>
 									</div>
@@ -164,19 +165,19 @@
 </template>
 
 <script setup lang="ts">
-import type { Instance } from '~/types/servers/instanceTypes';
+import type { ExtendedInstance } from '~/types/servers/instanceTypes';
 import borderColor from '~/utils/servers/stateColor';
 import { ref, computed, onMounted, watch } from 'vue';
 import { Search, ChevronRight } from 'lucide-vue-next';
 
 // Props
 const props = defineProps<{
-	instances?: Instance[];
+	instances?: ExtendedInstance[];
 }>();
 
 // Reactive data
 const loading = ref(true);
-const instances = ref<Instance[]>(props.instances || []);
+const instances = ref<ExtendedInstance[]>(props.instances || []);
 const searchQuery = ref('');
 const selectedModule = ref('');
 const selectedStatus = ref('');
@@ -190,20 +191,20 @@ const filteredInstances = computed(() => {
 		const query = searchQuery.value.toLowerCase();
 		filtered = filtered.filter(
 			(instance) =>
-				(instance.friendlyName || instance.instanceName).toLowerCase().includes(query) ||
-				(instance.description || '').toLowerCase().includes(query) ||
-				(instance.moduleName || instance.module || '').toLowerCase().includes(query)
+				(instance.FriendlyName || instance.InstanceName).toLowerCase().includes(query) ||
+				(instance.Description || '').toLowerCase().includes(query) ||
+				(instance.ModuleDisplayName || instance.Module || '').toLowerCase().includes(query)
 		);
 	}
 
 	// Filter by module
 	if (selectedModule.value) {
-		filtered = filtered.filter((instance) => (instance.moduleName || instance.module) === selectedModule.value);
+		filtered = filtered.filter((instance) => (instance.ModuleDisplayName || instance.Module) === selectedModule.value);
 	}
 
 	// Filter by status
 	if (selectedStatus.value) {
-		filtered = filtered.filter((instance) => instance.server.state === selectedStatus.value);
+		filtered = filtered.filter((instance) => instance.AppState === selectedStatus.value);
 	}
 
 	// Sort by status priority: Running first, then others
@@ -217,32 +218,32 @@ const filteredInstances = computed(() => {
 			Suspended: 5,
 		};
 
-		const aPriority = statusPriority[a.server.state] ?? 6;
-		const bPriority = statusPriority[b.server.state] ?? 6;
+		const aPriority = statusPriority[a.AppState] ?? 6;
+		const bPriority = statusPriority[b.AppState] ?? 6;
 
 		if (aPriority !== bPriority) {
 			return aPriority - bPriority;
 		}
 
 		// If same status, sort alphabetically by name
-		const aName = a.friendlyName || a.instanceName;
-		const bName = b.friendlyName || b.instanceName;
+		const aName = a.FriendlyName || a.InstanceName;
+		const bName = b.FriendlyName || b.InstanceName;
 		return aName.localeCompare(bName);
 	});
 });
 
 const uniqueModules = computed(() => {
-	const modules = instances.value.map((instance) => instance.moduleName || instance.module || 'Unknown');
+	const modules = instances.value.map((instance) => instance.ModuleDisplayName || instance.Module || 'Unknown');
 	return [...new Set(modules)].sort();
 });
 
 const runningServers = computed(() => {
-	return instances.value.filter((instance) => instance.server.state === 'Running').length;
+	return instances.value.filter((instance) => instance.AppState === 'Running').length;
 });
 
 const totalPlayers = computed(() => {
 	return instances.value.reduce((total, instance) => {
-		return total + (instance.server.users?.RawValue || 0);
+		return total + (instance.Metrics['Active Users']?.RawValue || 0);
 	}, 0);
 });
 

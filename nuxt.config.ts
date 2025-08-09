@@ -11,6 +11,7 @@ export default defineNuxtConfig({
 		apiSecret: process.env.API_SECRET,
 		public: {
 			baseApiURI: 'https://vsb.voxxie.me/v1',
+			newApiURI: 'https://vapi.voxxie.me/v2',
 			voxelGuild: '997533753087889500',
 		},
 	},

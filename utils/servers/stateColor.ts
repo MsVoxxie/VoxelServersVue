@@ -1,6 +1,6 @@
-import type { ServerState } from '../../types/servers/instanceTypes';
+import type { ExtendedInstance } from '../../types/servers/instanceTypes';
 
-const borderColor = (serverState: ServerState) => {
+const borderColor = (serverState: ExtendedInstance['AppState']) => {
 	// AMP (CubeCoders) style status colors
 	switch (serverState) {
 		case 'Running':

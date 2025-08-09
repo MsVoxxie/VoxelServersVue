@@ -17,11 +17,11 @@
 					<Transition name="player-slide">
 						<div
 							v-if="players[i - 1]"
-							:key="players[i - 1].uuid"
+							:key="players[i - 1].UserID"
 							class="absolute inset-0 flex items-center gap-2 bg-gray-800/80 px-3 py-2 rounded-lg w-full"
 							style="z-index: 1"
 						>
-							<playerHead :player="players[i - 1]" :module="instance.module" :moduleName="instance.moduleName" />
+							<playerHead :player="{ name: players[i - 1]?.Username, uuid: players[i - 1]?.UserID }" :module="instance.Module" />
 						</div>
 					</Transition>
 				</div>
@@ -64,29 +64,29 @@
 			<!-- Header: Game Icon, Name, Status -->
 			<div class="flex items-center gap-3 md:gap-6 mb-2 pr-12 md:pr-20">
 				<div class="relative">
-					<img :src="instance.icon" class="h-16 md:h-20 lg:h-25 rounded-xl shadow-lg border-2 border-white/20 bg-gray-900 object-cover" />
+					<!-- <img :src="instance.Icon" class="h-16 md:h-20 lg:h-25 rounded-xl shadow-lg border-2 border-white/20 bg-gray-900 object-cover" /> -->
 					<!-- Status Bar with Text -->
 					<div
 						class="absolute bottom-0 left-0 right-0 h-5 md:h-6 rounded-b-lg flex items-center justify-center text-xs md:text-sm font-semibold text-white shadow-lg"
 						:class="{
-							'bg-green-500/90': instance.server.state === 'Running',
-							'bg-yellow-500/90': instance.server.state === 'Starting',
-							'bg-red-500/90': instance.server.state === 'Stopped' || instance.server.state === 'Offline',
-							'bg-gray-500/90': !['Running', 'Starting', 'Stopped', 'Offline'].includes(instance.server.state),
+							'bg-green-500/90': instance.AppState === 'Running',
+							'bg-yellow-500/90': instance.AppState === 'Starting',
+							'bg-red-500/90': instance.AppState === 'Stopped' || instance.AppState === 'Offline',
+							'bg-gray-500/90': !['Running', 'Starting', 'Stopped', 'Offline'].includes(instance.AppState),
 						}"
 					>
-						{{ instance.server.state }}
+						{{ instance.AppState }}
 					</div>
 				</div>
 				<div class="flex-1 min-w-0">
 					<h1 class="text-xl md:text-3xl lg:text-4xl font-bold text-white">
-						<span class="truncate block">{{ instance.friendlyName || instance.instanceName }}</span>
+						<span class="truncate block">{{ instance.FriendlyName || instance.InstanceName }}</span>
 					</h1>
 					<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
-						<span class="text-gray-300 text-sm md:text-lg">{{ instance.moduleName || instance.module }}</span>
+						<span class="text-gray-300 text-sm md:text-lg">{{ instance.ModuleDisplayName?.replace('Seven Days To Die', '7D2D') || instance.Module }}</span>
 						<a
-							v-if="instance.module === 'Minecraft' && instance.welcomeMessage"
-							:href="instance.welcomeMessage"
+							v-if="(instance.Module === 'Minecraft' || instance.ModuleDisplayName === 'Seven Days To Die') && instance.WelcomeMessage"
+							:href="instance.WelcomeMessage"
 							target="_blank"
 							rel="noopener"
 							class="inline-flex hover:translate-y-0.5 transition-transform duration-200"
@@ -109,8 +109,8 @@
 				<Transition name="mobile-players">
 					<div v-if="showMobilePlayers" class="mt-3 max-h-48 overflow-y-auto">
 						<div class="grid grid-cols-1 gap-2">
-							<div v-for="player in players" :key="player.uuid" class="flex items-center gap-2 bg-gray-800/80 px-3 py-2 rounded-lg">
-								<playerHead :player="player" :module="instance.module" :moduleName="instance.moduleName" />
+							<div v-for="player in players" :key="player.UserID" class="flex items-center gap-2 bg-gray-800/80 px-3 py-2 rounded-lg">
+								<playerHead :player="{ name: player.Username, uuid: player.UserID }" :module="instance.Module" />
 							</div>
 							<div v-if="players.length === 0" class="text-gray-400 text-center py-4">No players online</div>
 						</div>
@@ -122,25 +122,25 @@
 			<section class="bg-gray-900/80 rounded-xl p-3 md:p-4 shadow flex flex-col gap-2 divide-y divide-white/20">
 				<h2 class="text-base md:text-lg font-semibold text-white mb-2">Server Stats</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-					<BarGraph key="cpu" :history="23" title="CPU" :value="instance.server.cpu.RawValue" :max="instance.server.cpu.MaxValue" color="#3B82F6" />
+					<BarGraph key="cpu" :history="23" title="CPU" :value="instance.Metrics.cpu.RawValue" :max="instance.Metrics.cpu.MaxValue" color="#3B82F6" />
 					<BarGraph
 						key="memory"
 						:history="23"
 						title="Memory"
-						:value="instance.server.memory.RawValue"
-						:max="instance.server.memory.MaxValue"
+						:value="instance.Metrics.memory.RawValue"
+						:max="instance.Metrics.memory.MaxValue"
 						color="#10B981"
-						:unit="instance.server.memory.Units"
+						:unit="instance.Metrics.memory.Units"
 					/>
 					<BarGraph
-						v-if="instance.server.performance"
+						v-if="instance.Metrics.performance"
 						key="performance"
 						:history="23"
 						title="Performance"
-						:value="instance.server.performance.RawValue"
-						:max="instance.server.performance.MaxValue"
+						:value="instance.Metrics.performance.RawValue"
+						:max="instance.Metrics.performance.MaxValue"
 						color="#F59E42"
-						:unit="instance.server.performance.Units"
+						:unit="instance.Metrics.performance.Units"
 					/>
 				</div>
 			</section>
@@ -152,24 +152,20 @@
 					<h2 class="text-base md:text-lg font-semibold text-white">Server Details</h2>
 					<div class="px-1">
 						<div>
-							<div v-if="instance.server.currentTime !== null" class="text-gray-400 text-sm">Current State:</div>
+							<!-- <div v-if="instance.currentTime !== null" class="text-gray-400 text-sm">Current State:</div>
 							<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-								<div
-									v-if="instance.server.currentTime !== null"
-									:class="Number(instance.server.currentTime.day) % 7 === 0 ? 'text-red-500' : 'text-white'"
-									class="text-sm md:text-base"
-								>
-									Day {{ instance.server.currentTime.day }}
+								<div v-if="instance.currentTime !== null" :class="Number(instance.currentTime.day) % 7 === 0 ? 'text-red-500' : 'text-white'" class="text-sm md:text-base">
+									Day {{ instance.currentTime.day }}
 								</div>
-								<div v-if="instance.server.currentTime !== null" class="text-white text-sm md:text-base">| {{ instance.server.currentTime.time }}</div>
+								<div v-if="instance.currentTime !== null" class="text-white text-sm md:text-base">| {{ instance.currentTime.time }}</div>
 							</div>
 							<div v-if="instance.pack_version" class="text-gray-400 text-sm mt-2">Modpack Version:</div>
-							<div v-if="instance.pack_version" class="text-white text-sm md:text-base">{{ instance.pack_version || 'N/A' }}</div>
+							<div v-if="instance.pack_version" class="text-white text-sm md:text-base">{{ instance.pack_version || 'N/A' }}</div> -->
 							<div class="text-gray-400 text-sm mt-2">Description:</div>
-							<div class="text-white text-sm md:text-base break-words">{{ instance.description || 'No description.' }}</div>
+							<div class="text-white text-sm md:text-base break-words">{{ instance.Description || 'No description.' }}</div>
 							<div class="text-gray-400 text-sm mt-2">IP Address:</div>
 							<div class="mt-1">
-								<ServerConnection text="" serverState="Running" :ip="instance.server.ip" :port="instance.server.port" />
+								<ServerConnection text="" serverState="Running" :ip="instance.IP" :port="instance.Port" />
 							</div>
 						</div>
 					</div>
@@ -210,7 +206,7 @@
 				:linkStatus="linkStatus"
 				:isAuthenticated="isAuthenticated"
 				:nickOrName="nickOrName"
-				:serverGame="instance.moduleName || instance.module"
+				:serverGame="instance.ModuleDisplayName || instance.Module"
 			/>
 		</main>
 	</section>
@@ -222,7 +218,7 @@ import { LucideLogOut } from 'lucide-vue-next';
 import { siDiscord } from 'simple-icons';
 import { useAuth } from '#imports';
 import borderColor from '~/utils/servers/stateColor';
-import type { Instance } from '~/types/servers/instanceTypes';
+import type { ExtendedInstance } from '~/types/servers/instanceTypes';
 import ServerConnection from './serverConnection.vue';
 import BarGraph from './barGraph.vue';
 import playerHead from './basicPlayer.vue';
@@ -260,7 +256,7 @@ const instanceId = route.params.id as string;
 const showMobilePlayers = ref(false);
 
 const props = defineProps<{
-	instance: Instance;
+	instance: ExtendedInstance;
 	network: any;
 	linkStatus: boolean;
 }>();
@@ -350,8 +346,34 @@ onUnmounted(() => {
 	}
 });
 
-const maxPlayers = computed(() => props.instance.server.users?.MaxValue || 0);
-const players = computed(() => props.instance.players || []);
+// Replace legacy instance properties with ExtendedInstance properties
+// Example changes:
+// - instance.welcomeMessage -> instance.WelcomeMessage
+// - instance.pack_version -> instance.pack_version (if present)
+// - instance.server -> instance.Metrics (metrics are now in Metrics)
+// - instance.players -> instance.Metrics.users.PlayerList (if present)
+// - instance.server.state -> instance.AppState
+// - instance.server.cpu -> instance.Metrics.cpu
+// - instance.server.memory -> instance.Metrics.memory
+// - instance.server.performance -> instance.Metrics.performance
+// - instance.server.ip/port -> instance.ip/port (if present)
+// - instance.server.currentTime -> instance.currentTime (if present)
+
+// Update computed properties
+const maxPlayers = computed(() => props.instance.Metrics.users?.MaxValue || 0);
+const players = computed(() => props.instance.Metrics.users?.PlayerList || []);
+
+// Update template usages (examples):
+// <span class="text-xs md:text-sm text-gray-300 font-mono">{{ players.length }} / {{ maxPlayers }}</span>
+// <playerHead :player="players[i - 1]" :module="instance.module" :moduleName="instance.moduleName" />
+// <img :src="instance.icon" ... />
+// <div :class="{ 'bg-green-500/90': instance.AppState === 'Running', ... }">{{ instance.AppState }}</div>
+// <BarGraph :value="instance.Metrics.cpu.RawValue" :max="instance.Metrics.cpu.MaxValue" ... />
+// <BarGraph :value="instance.Metrics.memory.RawValue" :max="instance.Metrics.memory.MaxValue" ... />
+// <BarGraph v-if="instance.Metrics.performance" :value="instance.Metrics.performance.RawValue" :max="instance.Metrics.performance.MaxValue" ... />
+// <ServerConnection :ip="instance.ip" :port="instance.port" ... />
+// <div v-if="instance.currentTime !== null">Day {{ instance.currentTime.day }} | {{ instance.currentTime.time }}</div>
+// <ServerChat :serverGame="instance.moduleName || instance.module" ... />
 </script>
 
 <style scoped>
