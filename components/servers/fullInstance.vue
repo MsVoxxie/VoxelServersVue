@@ -122,25 +122,25 @@
 			<section class="bg-gray-900/80 rounded-xl p-3 md:p-4 shadow flex flex-col gap-2 divide-y divide-white/20">
 				<h2 class="text-base md:text-lg font-semibold text-white mb-2">Server Stats</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-					<BarGraph key="cpu" :history="23" title="CPU" :value="instance.Metrics.cpu.RawValue" :max="instance.Metrics.cpu.MaxValue" color="#3B82F6" />
+					<BarGraph key="cpu" :history="23" title="CPU" :value="instance.Metrics?.['CPU Usage']?.RawValue" :max="instance.Metrics?.['CPU Usage']?.MaxValue" color="#3B82F6" />
 					<BarGraph
 						key="memory"
 						:history="23"
 						title="Memory"
-						:value="instance.Metrics.memory.RawValue"
-						:max="instance.Metrics.memory.MaxValue"
+						:value="instance.Metrics?.['Memory Usage']?.RawValue"
+						:max="instance.Metrics?.['Memory Usage']?.MaxValue"
 						color="#10B981"
-						:unit="instance.Metrics.memory.Units"
+						:unit="instance.Metrics?.['Memory Usage']?.Units"
 					/>
 					<BarGraph
-						v-if="instance.Metrics.performance"
+						v-if="instance.Metrics?.['TPS']"
 						key="performance"
 						:history="23"
 						title="Performance"
-						:value="instance.Metrics.performance.RawValue"
-						:max="instance.Metrics.performance.MaxValue"
+						:value="instance.Metrics?.['TPS']?.RawValue"
+						:max="instance.Metrics?.['TPS']?.MaxValue"
 						color="#F59E42"
-						:unit="instance.Metrics.performance.Units"
+						:unit="instance.Metrics?.['TPS']?.Units"
 					/>
 				</div>
 			</section>
@@ -346,34 +346,9 @@ onUnmounted(() => {
 	}
 });
 
-// Replace legacy instance properties with ExtendedInstance properties
-// Example changes:
-// - instance.welcomeMessage -> instance.WelcomeMessage
-// - instance.pack_version -> instance.pack_version (if present)
-// - instance.server -> instance.Metrics (metrics are now in Metrics)
-// - instance.players -> instance.Metrics.users.PlayerList (if present)
-// - instance.server.state -> instance.AppState
-// - instance.server.cpu -> instance.Metrics.cpu
-// - instance.server.memory -> instance.Metrics.memory
-// - instance.server.performance -> instance.Metrics.performance
-// - instance.server.ip/port -> instance.ip/port (if present)
-// - instance.server.currentTime -> instance.currentTime (if present)
-
 // Update computed properties
-const maxPlayers = computed(() => props.instance.Metrics.users?.MaxValue || 0);
-const players = computed(() => props.instance.Metrics.users?.PlayerList || []);
-
-// Update template usages (examples):
-// <span class="text-xs md:text-sm text-gray-300 font-mono">{{ players.length }} / {{ maxPlayers }}</span>
-// <playerHead :player="players[i - 1]" :module="instance.module" :moduleName="instance.moduleName" />
-// <img :src="instance.icon" ... />
-// <div :class="{ 'bg-green-500/90': instance.AppState === 'Running', ... }">{{ instance.AppState }}</div>
-// <BarGraph :value="instance.Metrics.cpu.RawValue" :max="instance.Metrics.cpu.MaxValue" ... />
-// <BarGraph :value="instance.Metrics.memory.RawValue" :max="instance.Metrics.memory.MaxValue" ... />
-// <BarGraph v-if="instance.Metrics.performance" :value="instance.Metrics.performance.RawValue" :max="instance.Metrics.performance.MaxValue" ... />
-// <ServerConnection :ip="instance.ip" :port="instance.port" ... />
-// <div v-if="instance.currentTime !== null">Day {{ instance.currentTime.day }} | {{ instance.currentTime.time }}</div>
-// <ServerChat :serverGame="instance.moduleName || instance.module" ... />
+const maxPlayers = computed(() => props.instance.Metrics?.users?.MaxValue || 0);
+const players = computed(() => props.instance.Metrics?.PlayerList?.PlayerList || []);
 </script>
 
 <style scoped>

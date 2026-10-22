@@ -79,5 +79,5 @@ export interface Metric {
 	Color2: string | null;
 	Color3: string | null;
 	ShortName: string | null;
-	PlayerList?: PlayerList[];
+	PlayerList: PlayerList[];
 }
